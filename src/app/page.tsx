@@ -1,107 +1,123 @@
-// import Image from "next/image";
+'use client'
 
-import Link from "next/link";
-// import { useState } from "react";
+import { useState, useEffect } from 'react'
+import Link from "next/link"
+import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
-const feeds = [
-  
-]
+interface Story {
+  id: number
+  title: string
+  url: string
+  time: number
+}
 
-const data = [
-  {
-    id: 1,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 2,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 3,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 4,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 5,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 6,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 7,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 8,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-  {
-    id: 9,
-    title: "The future of the web is in your hands",
-    url: "http://blog.ycombinator.com/the-future-of-the-web-is-in-your-hands/",
-    points: 134,
-    user: "dhouston"
-  },
-]
+export default function HackerNewsFeed() {
+  const [stories, setStories] = useState<Story[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const storiesPerPage = 50
 
-export default function Home() {
-  // const [state, setState] = useState(null);
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
+        const storyIds = await response.json()
+
+        const storyPromises = storyIds.slice(0, 500).map((id: number) =>
+          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(res => res.json())
+        )
+
+        const storyDetails = await Promise.all(storyPromises)
+        setStories(storyDetails)
+        setIsLoading(false)
+      } catch (err) {
+        setError('Failed to fetch stories. Please try again later.')
+        setIsLoading(false)
+      }
+    }
+
+    fetchStories()
+  }, [])
+
+  const indexOfLastStory = currentPage * storiesPerPage
+  const indexOfFirstStory = indexOfLastStory - storiesPerPage
+  const currentStories = stories.slice(indexOfFirstStory, indexOfLastStory)
+
+  const totalPages = Math.ceil(stories.length / storiesPerPage)
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-6xl mx-auto p-4">
+        <p className="text-red-500">{error}</p>
+      </div>
+    )
+  }
 
   return (
-    <div className="max-w-[60rem] m-auto bg-orange-50 my-2">
-      <nav className="bg-orange-500 px-2 flex">
-        <span>Hacker News Clone</span>
-        <div className="grow"></div>
-        <Link href="/login">Login</Link>
-      </nav>
-      <div className="px-2">
-        <ol className="list-inside list-decimal">
-          {data.map((item) => (
-            <li key={item.id} className="gap-4 list-item list-decimal">
-              <a href={item.url} className="inline-flex flex-col">
-                <div>
-                  <span>{item.title} </span>
-                  <span className="hover:underline">({new URL(item.url).hostname})</span> <br />
-                </div>
-                <small>{item.points} points by {item.user} x minutes/hours ago</small>
-              </a>
-            </li>
-          ))}
-        </ol>
-        <p className="pt-4">More</p>
+    <div className="w-full max-w-6xl mx-auto p-4">
+      <h1 className="text-2xl font-bold">Hacker News Top Stories</h1>
+      <p className='mb-4'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
+      <div className="border border-border rounded-md overflow-hidden mb-4">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-muted dark:bg-background">
+              <th className="text-left p-3 font-semibold">Title</th>
+              <th className="text-right p-3 font-semibold">Index</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentStories.map((story, index) => (
+              <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
+                <td className="p-3">
+                  <Link 
+                    href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                  >
+                    {story.title}
+                  </Link>
+                </td>
+                <td className="p-3 text-right font-mono">
+                  {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
+                  {currentPage*50 + index - 49}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <footer className="border-t-2 border-orange-500 px-2 text-center py-4">
-        <p>Hacker News Clone, 2024</p>
-      </footer>
+      <div className="flex justify-between items-center">
+        <Button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          variant="outline"
+        >
+          <ChevronLeft className="h-4 w-4 mr-2" />
+          Previous
+        </Button>
+        <span className="text-foreground">Page {currentPage} of {totalPages}</span>
+        <Button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          variant="outline"
+        >
+          Next
+          <ChevronRight className="h-4 w-4 ml-2" />
+        </Button>
+      </div>
     </div>
-  );
+  )
 }
