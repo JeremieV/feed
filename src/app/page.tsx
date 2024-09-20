@@ -20,7 +20,7 @@ export default function HackerNewsFeed() {
   const [currentPage, setCurrentPage] = useState(1)
   const storiesPerPage = 50
 
-  const { theme, setTheme } = useTheme()
+  const { theme } = useTheme()
 
   useEffect(() => {
     const fetchStories = async () => {
