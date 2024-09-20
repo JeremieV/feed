@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from "next/link"
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useTheme } from "next-themes";
 
 interface Story {
   id: number
@@ -18,6 +19,8 @@ export default function HackerNewsFeed() {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const storiesPerPage = 50
+
+  const { theme, setTheme } = useTheme()
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -67,6 +70,7 @@ export default function HackerNewsFeed() {
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4" id='top'>
+      The current theme is: {theme}
       <h1 className="text-2xl font-bold">Hacker News Top Stories</h1>
       <p className='mb-4'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
       <div className="border border-border rounded-md overflow-hidden mb-4">
