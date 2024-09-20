@@ -66,13 +66,13 @@ export default function HackerNewsFeed() {
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4">
+    <div className="w-full max-w-6xl mx-auto p-4" id='top'>
       <h1 className="text-2xl font-bold">Hacker News Top Stories</h1>
       <p className='mb-4'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
       <div className="border border-border rounded-md overflow-hidden mb-4">
         <table className="w-full">
           <thead>
-            <tr className="bg-muted dark:bg-background">
+            <tr className="bg-muted">
               <th className="text-left p-3 font-semibold">Title</th>
               <th className="text-right p-3 font-semibold">Index</th>
             </tr>
@@ -81,7 +81,7 @@ export default function HackerNewsFeed() {
             {currentStories.map((story, index) => (
               <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
                 <td className="p-3">
-                  <Link 
+                  <Link
                     href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -92,7 +92,7 @@ export default function HackerNewsFeed() {
                 </td>
                 <td className="p-3 text-right font-mono">
                   {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
-                  {currentPage*50 + index - 49}
+                  {currentPage * 50 + index - 49}
                 </td>
               </tr>
             ))}
@@ -110,7 +110,15 @@ export default function HackerNewsFeed() {
         </Button>
         <span className="text-foreground">Page {currentPage} of {totalPages}</span>
         <Button
-          onClick={() => paginate(currentPage + 1)}
+          onClick={() => {
+            paginate(currentPage + 1)
+            const topElement = document.getElementById('top');
+            topElement?.scrollIntoView({
+              behavior: 'smooth',
+              block: 'start'
+            });
+
+          }}
           disabled={currentPage === totalPages}
           variant="outline"
         >
