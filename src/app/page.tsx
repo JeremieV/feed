@@ -6,15 +6,88 @@ import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { fetchMetadata } from '@/lib/fetchMetadata'
 // import Image from 'next/image'
+import { Badge } from "@/components/ui/badge"
 
 interface Story {
   id: number
   title: string
+  cover_image?: string
   url: string
-  time: number
+  published: string
+  author?: string
 }
 
-export default function HackerNewsFeed() {
+async function fetchHackerNewsTopStories(): Promise<Story[]> {
+  const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
+  const storyIds = await response.json()
+
+  const storyPromises = storyIds.slice(0, 500).map((id: number) =>
+    fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(res => res.json())
+  )
+
+  const storyDetails = await Promise.all(storyPromises)
+  return storyDetails
+}
+
+async function fetchDevToTopStories(): Promise<Story[]> {
+  interface DevToPost {
+    id: number
+    title: string
+    url: string
+    cover_image: string
+    user: { name: string }
+    published_timestamp: string
+  }
+
+  const response = await fetch(`https://dev.to/api/articles?top=500`)
+  const stories = (await response.json()).map((e: DevToPost) => ({
+    id: e.id,
+    title: e.title,
+    url: e.url,
+    cover_image: e.cover_image,
+    author: e.user.name,
+    published: e.published_timestamp,
+  }))
+  return stories
+}
+
+async function fetchRSSFeed(url: string): Promise<Story[]> {
+  const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
+  const data = await response.json()
+  return data.items.map((item: any) => ({
+    id: item.guid,
+    title: item.title,
+    url: item.link,
+    published: item.pubDate,
+  }))
+  // const response = await fetch(`https://rssjson.com/v1.1/${encodeURIComponent(url)}`)
+  // const data = await response.json()
+  // return data.items.map((item: any) => ({
+  //   id: item.guid,
+  //   title: item.title,
+  //   url: item.link,
+  //   published: item.pubDate,
+  // }))
+}
+
+// skeleton
+
+// import { Skeleton } from "@/components/ui/skeleton"
+
+// export function SkeletonDemo() {
+//   return (
+//     <div className="flex items-center space-x-4">
+//       <Skeleton className="h-12 w-12 rounded-full" />
+//       <div className="space-y-2">
+//         <Skeleton className="h-4 w-[250px]" />
+//         <Skeleton className="h-4 w-[200px]" />
+//       </div>
+//     </div>
+//   )
+// }
+
+
+export default function Feed() {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -22,18 +95,37 @@ export default function HackerNewsFeed() {
   const [gridView, setGridView] = useState(false)
   const storiesPerPage = 50
 
+  const [selectedTags, setSelectedTags] = useState<string[]>(["Dev.to"])
+
+  const toggleTag = (tag: string) => {
+    // multiple selectable
+    // setSelectedTags(prev =>
+    //   prev.includes(tag)
+    //     ? prev.filter(t => t !== tag)
+    //     : [...prev, tag]
+    // )
+
+    // single selectable
+    setSelectedTags([tag])
+  }
+
   useEffect(() => {
     const fetchStories = async () => {
       try {
-        const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
-        const storyIds = await response.json()
-
-        const storyPromises = storyIds.slice(0, 500).map((id: number) =>
-          fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(res => res.json())
-        )
-
-        const storyDetails = await Promise.all(storyPromises)
-        setStories(storyDetails)
+        setIsLoading(true)
+        // const stories = await fetchDevToTopStories()
+        console.log(selectedTags.includes("Hacker News Top Stories"))
+        const stories: Story[] = [];
+        if (selectedTags.includes("Hacker News Top Stories")) {
+          stories.push(...await fetchHackerNewsTopStories());
+        }
+        if (selectedTags.includes("Dev.to")) {
+          stories.push(...await fetchDevToTopStories());
+        }
+        if (selectedTags.includes("RSS")) {
+          stories.push(...await fetchRSSFeed("https://www.wired.com/feed/rss"));
+        }
+        setStories(stories)
         setIsLoading(false)
       } catch (err) {
         setError('Failed to fetch stories. Please try again later.')
@@ -42,7 +134,7 @@ export default function HackerNewsFeed() {
     }
 
     fetchStories()
-  }, [])
+  }, [selectedTags])
 
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
@@ -52,36 +144,56 @@ export default function HackerNewsFeed() {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  if (isLoading) {
-    return (
-      <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
-  }
-
-  if (error) {
-    return (
-      <div className="w-full max-w-6xl mx-auto p-4">
-        <p className="text-red-500">{error}</p>
-      </div>
-    )
-  }
+  // Sample tags - in a real application, these might come from props or an API
+  const tags = [
+    "Hacker News Top Stories", "Dev.to", "RSS",
+  ]
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4" id='top'>
-      <h1 className="text-2xl font-bold">Hacker News Top Stories</h1>
+      <h1 className="text-2xl font-bold">Customizable Feed</h1>
       <p className='mb-4'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
-      <div className="flex justify-end mb-4">
+      <div className="flex justify-between mb-4">
+        {/* tag selection */}
+        <div className="flex flex-wrap gap-2 mr-2">
+          {tags.map(tag => (
+            <Badge
+              key={tag}
+              variant={selectedTags.includes(tag) ? "default" : "outline"}
+              className={`
+              cursor-pointer transition-all
+              ${selectedTags.includes(tag)
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-background text-foreground hover:bg-primary/10'
+                }
+            `}
+              onClick={() => toggleTag(tag)}
+            >
+              {tag}
+            </Badge>
+          ))}
+        </div>
+        {/* tag selection end */}
         <Button onClick={() => setGridView(!gridView)} variant="outline">
           {gridView ? 'List view' : 'Grid view'}
         </Button>
       </div>
-      {gridView ? (
-        <GridView currentStories={currentStories} />
-      ) : (
-        <TableView currentStories={currentStories} currentPage={currentPage} />
-        )}
+      {error ? (
+        <div className="w-full text-center py-4">
+          <p className="text-red-500">{error}</p>
+        </div>
+      ) :
+        isLoading ? (
+          <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) :
+          gridView ? (
+            <GridView currentStories={currentStories} />
+          ) : (
+            <TableView currentStories={currentStories} currentPage={currentPage} />
+          )
+      }
       <div className="flex justify-between items-center">
         <Button
           onClick={() => paginate(currentPage - 1)}
@@ -116,35 +228,35 @@ export default function HackerNewsFeed() {
 function TableView({ currentStories, currentPage }: { currentStories: Story[], currentPage: number }) {
   return (
     <div className="border border-border rounded-md overflow-hidden mb-4">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-muted">
-              <th className="text-left p-3 font-semibold">Title</th>
-              <th className="text-right p-3 font-semibold">Index</th>
+      <table className="w-full">
+        <thead>
+          <tr className="bg-muted">
+            <th className="text-left p-3 font-semibold">Title</th>
+            <th className="text-right p-3 font-semibold">Index</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentStories.map((story, index) => (
+            <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
+              <td className="p-3">
+                <Link
+                  href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                >
+                  {story.title}
+                </Link>
+              </td>
+              <td className="p-3 text-right font-mono">
+                {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
+                {currentPage * 50 + index - 49}
+              </td>
             </tr>
-          </thead>
-          <tbody>
-            {currentStories.map((story, index) => (
-              <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
-                <td className="p-3">
-                  <Link
-                    href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:underline"
-                  >
-                    {story.title}
-                  </Link>
-                </td>
-                <td className="p-3 text-right font-mono">
-                  {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
-                  {currentPage * 50 + index - 49}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+          ))}
+        </tbody>
+      </table>
+    </div>
   )
 }
 
@@ -179,7 +291,7 @@ function GridComponent({ story }: { story: Story }) {
           setImage(metadata.image)
         }
       }
-    })() 
+    })()
   }, [])
 
   return (
@@ -191,7 +303,7 @@ function GridComponent({ story }: { story: Story }) {
       className="block"
     >
       <img
-        src={image}
+        src={story.cover_image ?? image}
         alt={story.title}
         width={320}
         height={180}
@@ -200,8 +312,8 @@ function GridComponent({ story }: { story: Story }) {
       <div className="p-3">
         <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
         <p className="text-xs text-muted-foreground mt-1">
-          { new URL(story.url || `https://news.ycombinator.com`).host.replace(/^www\./, '')} · 
-          {new Date(story.time * 1000).toLocaleDateString()}
+          {new URL(story.url || `https://news.ycombinator.com`).host.replace(/^www\./, '')} ·
+          {new Date(story.published).toLocaleDateString()}
         </p>
       </div>
     </Link>
