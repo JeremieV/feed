@@ -52,9 +52,16 @@ async function fetchDevToTopStories(): Promise<Story[]> {
 }
 
 async function fetchRSSFeed(url: string): Promise<Story[]> {
+  interface RSSItem {
+    guid: string
+    title: string
+    link: string
+    pubDate: string
+  }
+
   const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
   const data = await response.json()
-  return data.items.map((item: any) => ({
+  return data.items.map((item: RSSItem) => ({
     id: item.guid,
     title: item.title,
     url: item.link,
@@ -144,7 +151,6 @@ export default function Feed() {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  // Sample tags - in a real application, these might come from props or an API
   const tags = [
     "Hacker News Top Stories", "Dev.to", "RSS",
   ]
