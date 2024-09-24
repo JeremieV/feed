@@ -1,81 +1,15 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from "next/link"
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { fetchMetadata } from '@/lib/fetchMetadata'
 // import Image from 'next/image'
 import { Badge } from "@/components/ui/badge"
-
-interface Story {
-  id: number
-  title: string
-  cover_image?: string
-  url: string
-  published: string
-  author?: string
-}
-
-async function fetchHackerNewsTopStories(): Promise<Story[]> {
-  const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
-  const storyIds = await response.json()
-
-  const storyPromises = storyIds.slice(0, 500).map((id: number) =>
-    fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(res => res.json())
-  )
-
-  const storyDetails = await Promise.all(storyPromises)
-  return storyDetails
-}
-
-async function fetchDevToTopStories(): Promise<Story[]> {
-  interface DevToPost {
-    id: number
-    title: string
-    url: string
-    cover_image: string
-    user: { name: string }
-    published_timestamp: string
-  }
-
-  const response = await fetch(`https://dev.to/api/articles?top=500`)
-  const stories = (await response.json()).map((e: DevToPost) => ({
-    id: e.id,
-    title: e.title,
-    url: e.url,
-    cover_image: e.cover_image,
-    author: e.user.name,
-    published: e.published_timestamp,
-  }))
-  return stories
-}
-
-async function fetchRSSFeed(url: string): Promise<Story[]> {
-  interface RSSItem {
-    guid: string
-    title: string
-    link: string
-    pubDate: string
-  }
-
-  const response = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`)
-  const data = await response.json()
-  return data.items.map((item: RSSItem) => ({
-    id: item.guid,
-    title: item.title,
-    url: item.link,
-    published: item.pubDate,
-  }))
-  // const response = await fetch(`https://rssjson.com/v1.1/${encodeURIComponent(url)}`)
-  // const data = await response.json()
-  // return data.items.map((item: any) => ({
-  //   id: item.guid,
-  //   title: item.title,
-  //   url: item.link,
-  //   published: item.pubDate,
-  // }))
-}
+import { Story } from "@/lib/types"
+import { fetchRSSFeed } from '@/lib/fetchRSS'
 
 // skeleton
 
@@ -100,38 +34,24 @@ export default function Feed() {
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [gridView, setGridView] = useState(false)
+  const [showAddInput, setShowAddInput] = useState(false)
+
   const storiesPerPage = 50
-
-  const [selectedTags, setSelectedTags] = useState<string[]>(["Dev.to"])
-
-  const toggleTag = (tag: string) => {
-    // multiple selectable
-    // setSelectedTags(prev =>
-    //   prev.includes(tag)
-    //     ? prev.filter(t => t !== tag)
-    //     : [...prev, tag]
-    // )
-
-    // single selectable
-    setSelectedTags([tag])
-  }
+  const [feeds, setFeeds] = useState([
+    "https://hnrss.org/best?count=99",
+    "https://www.wired.com/feed/rss",
+    "https://www.theverge.com/rss/index.xml",
+  ])
 
   useEffect(() => {
     const fetchStories = async () => {
       try {
+        const stories: Story[] = []
         setIsLoading(true)
-        // const stories = await fetchDevToTopStories()
-        console.log(selectedTags.includes("Hacker News Top Stories"))
-        const stories: Story[] = [];
-        if (selectedTags.includes("Hacker News Top Stories")) {
-          stories.push(...await fetchHackerNewsTopStories());
+        for (const feed of feeds) {
+          stories.push(...await fetchRSSFeed(feed));
         }
-        if (selectedTags.includes("Dev.to")) {
-          stories.push(...await fetchDevToTopStories());
-        }
-        if (selectedTags.includes("RSS")) {
-          stories.push(...await fetchRSSFeed("https://www.wired.com/feed/rss"));
-        }
+        stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
         setStories(stories)
         setIsLoading(false)
       } catch (err) {
@@ -139,9 +59,8 @@ export default function Feed() {
         setIsLoading(false)
       }
     }
-
     fetchStories()
-  }, [selectedTags])
+  }, [feeds])
 
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
@@ -151,39 +70,110 @@ export default function Feed() {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
-  const tags = [
-    "Hacker News Top Stories", "Dev.to", "RSS",
+  const popularFeeds = [
+    // ai generated
+    "https://www.wired.com/feed/rss",
+    "https://www.theverge.com/rss/index.xml",
+    "https://www.techradar.com/rss",
+    "https://www.techrepublic.com/rssfeeds/articles/",
+    "https://www.techmeme.com/feed.xml",
+    "https://www.techcrunch.com/feed",
+    "https://www.recode.net/rss/index.xml",
+    "https://www.polygon.com/rss/index.xml",
+    "https://www.pcmag.com/rss.xml",
+    "https://www.npr.org/rss/rss.php",
+    "https://www.nytimes.com/section/technology/rss.xml"
   ]
+
+  // RSS input
+  const [inputValue, setInputValue] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+  const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      // validate url
+      addFeed()
+    }
+  }
+
+  function addFeed() {
+    // validate url
+    if (!inputValue
+      || !inputValue.startsWith('http')
+      || feeds.includes(inputValue)) {
+      return
+    }
+    setFeeds(x => [...x, inputValue])
+    setInputValue('')
+    inputRef.current?.focus()
+  }
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4" id='top'>
       <h1 className="text-2xl font-bold">Customizable Feed</h1>
-      <p className='mb-4'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
+      <p className='mb-8'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
       <div className="flex justify-between mb-4">
         {/* tag selection */}
         <div className="flex flex-wrap gap-2 mr-2">
-          {tags.map(tag => (
+          {feeds.map(f => (
             <Badge
-              key={tag}
-              variant={selectedTags.includes(tag) ? "default" : "outline"}
-              className={`
-              cursor-pointer transition-all
-              ${selectedTags.includes(tag)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-background text-foreground hover:bg-primary/10'
-                }
-            `}
-              onClick={() => toggleTag(tag)}
+              key={f}
+              variant={"outline"}
+              className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+              onClick={() => setFeeds(feeds => feeds.filter(x => x !== f))}
             >
-              {tag}
+              {f}
             </Badge>
           ))}
+          <Badge
+            variant={"secondary"}
+            className={`
+              cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10
+            `}
+            onClick={() => setShowAddInput(!showAddInput)}
+          >
+            Add feed
+          </Badge>
         </div>
         {/* tag selection end */}
         <Button onClick={() => setGridView(!gridView)} variant="outline">
           {gridView ? 'List view' : 'Grid view'}
         </Button>
       </div>
+      {showAddInput && (
+        <div>
+          <div>
+            <p className="font-semibold mb-4">Popular feeds</p>
+            <div className="flex flex-wrap gap-2">
+              {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
+                <Badge
+                  key={f}
+                  variant={"outline"}
+                  className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+                  onClick={() => setFeeds(x => x.includes(f) ? x : [...x, f])}
+                >
+                  {f}
+                </Badge>
+              ))}
+            </div>
+            <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
+              <Input
+                type="text"
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Add RSS feed"
+              />
+              <Button type='submit' disabled onSubmit={(e) => {
+                e.preventDefault()
+                addFeed()
+              }}>Add</Button>
+            </div>
+            <div />
+          </div>
+        </div>
+      )}
       {error ? (
         <div className="w-full text-center py-4">
           <p className="text-red-500">{error}</p>
@@ -281,11 +271,10 @@ function GridComponent({ story }: { story: Story }) {
 
   useEffect(() => {
     (async () => {
-      if (story.url) {
+      if (!story.thumbnail) {
         // try {
         //   const metaResponse = await fetch(`https://api.microlink.io?url=${encodeURIComponent(story.url)}`)
         //   const metaData = await metaResponse.json()
-        //   console.log(metaData)
         //   if (metaData.data.image && metaData.data.image.url) {
         //     setImage(metaData.data.image.url)
         //   }
@@ -293,8 +282,8 @@ function GridComponent({ story }: { story: Story }) {
         //   console.error('Error fetching meta data:', error)
         // }
         const metadata = await fetchMetadata(story.url)
-        if (metadata?.image) {
-          setImage(metadata.image)
+        if (metadata?.thumbnail) {
+          setImage(metadata.thumbnail)
         }
       }
     })()
@@ -303,13 +292,14 @@ function GridComponent({ story }: { story: Story }) {
   return (
     <Link
       key={story.id}
-      href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
+      href={story.url}
       target="_blank"
       rel="noopener noreferrer"
       className="block"
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={story.cover_image ?? image}
+        src={story.thumbnail ?? image}
         alt={story.title}
         width={320}
         height={180}
@@ -317,8 +307,8 @@ function GridComponent({ story }: { story: Story }) {
       />
       <div className="p-3">
         <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
-        <p className="text-xs text-muted-foreground mt-1">
-          {new URL(story.url || `https://news.ycombinator.com`).host.replace(/^www\./, '')} ·
+        <p className="text-sm text-muted-foreground">
+          {new URL(story.url).host.replace(/^www\./, '')} <br />
           {new Date(story.published).toLocaleDateString()}
         </p>
       </div>

@@ -46,7 +46,7 @@ export async function fetchMetadata(url: string) {
     console.log('Metadata:', { title, image, favicon });
     return {
       title: title,
-      image: image,
+      thumbnail: image,
       favicon: favicon,
     };
   } catch (error) {
