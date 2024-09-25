@@ -15,7 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 
 // import { Skeleton } from "@/components/ui/skeleton"
 
-// export function SkeletonDemo() {
+// function SkeletonDemo() {
 //   return (
 //     <div className="flex items-center space-x-4">
 //       <Skeleton className="h-12 w-12 rounded-full" />
@@ -305,7 +305,7 @@ function GridView({ currentStories, icons }: { currentStories: Story[], icons: '
   )
 }
 
-export function Thumbnail({ title }: { title: string }) {
+function Thumbnail({ title }: { title: string }) {
   const colorCombinations = [
     { from: 'from-purple-600', to: 'to-orange-600' },
     { from: 'from-purple-600', to: 'to-blue-600' },

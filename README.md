@@ -28,5 +28,13 @@ I captured the first few iterations as just to show my process ^[And to kind of 
 
 ## Roadmap 
 
+- [ ] add a way to go to either the url target, or the channel's page
+  - [ ] add "topics" which are curated collections of feeds 
+  - [ ] choose what the starting page should display, if indeed it should display anything
 - [ ] add a sidebar
-- [ ] performance work (thumbnail images)
+- [ ] performance work (thumbnail images, display skeleton while loading)
+- [ ] branding
+  - [ ] name
+  - [ ] logo / favicon
+  - [ ] url
+  - [ ] metadata also
