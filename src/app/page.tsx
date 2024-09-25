@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import Link from "next/link"
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { fetchMetadata } from '@/lib/fetchMetadata'
-// import Image from 'next/image'
+import { fetchMetadata, Metadata } from '@/lib/fetchMetadata'
 import { Badge } from "@/components/ui/badge"
 import { Story } from "@/lib/types"
 import { fetchRSSFeed } from '@/lib/fetchRSS'
+import { useSearchParams, useRouter } from 'next/navigation'
+import { Checkbox } from '@/components/ui/checkbox'
 
 // skeleton
 
@@ -27,13 +27,26 @@ import { fetchRSSFeed } from '@/lib/fetchRSS'
 //   )
 // }
 
-
 export default function Feed() {
+  const router = useRouter()
+  const searchParams = useSearchParams();
+
+  // view
+  const view: 'list' | 'grid' = searchParams.get('view') === 'grid' ? 'grid' : 'list';
+  function updateView(view: 'list' | 'grid') {
+    router.push(`?view=${view}&icons=${icons}`)
+  }
+
+  // icons
+  const icons: 'false' | 'true' = searchParams.get('icons') === 'false' ? 'false' : 'true';
+  function updateIcons(icons: 'true' | 'false') {
+    router.push(`?view=${view}&icons=${icons}`)
+  }
+
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [currentPage, setCurrentPage] = useState(1)
-  const [gridView, setGridView] = useState(false)
   const [showAddInput, setShowAddInput] = useState(false)
 
   const storiesPerPage = 50
@@ -136,9 +149,20 @@ export default function Feed() {
           </Badge>
         </div>
         {/* tag selection end */}
-        <Button onClick={() => setGridView(!gridView)} variant="outline">
-          {gridView ? 'List view' : 'Grid view'}
-        </Button>
+        <div className='flex gap-2'>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="icons" checked={icons === 'true'} onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} />
+            <label
+              htmlFor="icons"
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              icons
+            </label>
+          </div>
+          <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
+            {view === 'grid' ? 'List view' : 'Grid view'}
+          </Button>
+        </div>
       </div>
       {showAddInput && (
         <div>
@@ -184,10 +208,10 @@ export default function Feed() {
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
           </div>
         ) :
-          gridView ? (
-            <GridView currentStories={currentStories} />
+          view === 'grid' ? (
+            <GridView currentStories={currentStories} icons={icons} />
           ) : (
-            <TableView currentStories={currentStories} currentPage={currentPage} />
+            <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
           )
       }
       <div className="flex justify-between items-center">
@@ -221,7 +245,7 @@ export default function Feed() {
   )
 }
 
-function TableView({ currentStories, currentPage }: { currentStories: Story[], currentPage: number }) {
+function TableView({ currentStories, currentPage, icons }: { currentStories: Story[], currentPage: number, icons: 'true' | 'false' }) {
   return (
     <div className="border border-border rounded-md overflow-hidden mb-4">
       <table className="w-full">
@@ -235,14 +259,29 @@ function TableView({ currentStories, currentPage }: { currentStories: Story[], c
           {currentStories.map((story, index) => (
             <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
               <td className="p-3">
-                <Link
+                <a
                   href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
                   target="_blank"
+                  title={story.title}
                   rel="noopener noreferrer"
-                  className="hover:underline"
+                  className="flex"
                 >
-                  {story.title}
-                </Link>
+                  {icons === 'true' && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={`https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(story.url).hostname)}.ico`}
+                      alt=""
+                      className="aspect-square rounded-md w-5 h-5 object-cover mt-1 mr-3" />
+                  )}
+                  <div className='flex flex-col'>
+                    <span className='hover:underline'>{story.title}</span>
+                    <span className="text-muted-foreground text-sm">
+                      {new URL(story.url).host.replace(/^www\./, '')} {story.author && ` · ${story.author}`}
+                      {` · `}
+                      {new Date(story.published).toLocaleDateString()}
+                    </span>
+                  </div>
+                </a>
               </td>
               <td className="p-3 text-right font-mono">
                 {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
@@ -256,62 +295,124 @@ function TableView({ currentStories, currentPage }: { currentStories: Story[], c
   )
 }
 
-function GridView({ currentStories }: { currentStories: Story[] }) {
+function GridView({ currentStories, icons }: { currentStories: Story[], icons: 'true' | 'false' }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       {currentStories.map((story) => (
-        <GridComponent key={story.id} story={story} />
+        <GridComponent key={story.id} story={story} icons={icons} />
       ))}
     </div>
   )
 }
 
-function GridComponent({ story }: { story: Story }) {
-  const [image, setImage] = useState("https://placehold.co/600x400")
+export function Thumbnail({ title }: { title: string }) {
+  const colorCombinations = [
+    { from: 'from-purple-600', to: 'to-orange-600' },
+    { from: 'from-purple-600', to: 'to-blue-600' },
+    { from: 'from-red-600', to: 'to-yellow-600' },
+    { from: 'from-green-600', to: 'to-teal-600' },
+    { from: 'from-pink-500', to: 'to-purple-600' },
+    { from: 'from-yellow-400', to: 'to-orange-500' },
+    { from: 'from-blue-400', to: 'to-indigo-600' },
+    { from: 'from-teal-400', to: 'to-blue-500' },
+    { from: 'from-orange-500', to: 'to-red-600' },
+  ]
+
+  const gradientDirections = [
+    'bg-gradient-to-r',
+    'bg-gradient-to-br',
+    'bg-gradient-to-b',
+    'bg-gradient-to-bl',
+    'bg-gradient-to-l',
+    'bg-gradient-to-tl',
+    'bg-gradient-to-t',
+    'bg-gradient-to-tr',
+  ]
+
+  const [gradientStyle, setGradientStyle] = useState({
+    colors: colorCombinations[0],
+    direction: gradientDirections[0],
+  })
 
   useEffect(() => {
-    (async () => {
-      if (!story.thumbnail) {
-        // try {
-        //   const metaResponse = await fetch(`https://api.microlink.io?url=${encodeURIComponent(story.url)}`)
-        //   const metaData = await metaResponse.json()
-        //   if (metaData.data.image && metaData.data.image.url) {
-        //     setImage(metaData.data.image.url)
-        //   }
-        // } catch (error) {
-        //   console.error('Error fetching meta data:', error)
-        // }
-        const metadata = await fetchMetadata(story.url)
-        if (metadata?.thumbnail) {
-          setImage(metadata.thumbnail)
-        }
-      }
-    })()
+    const randomColorIndex = Math.floor(Math.random() * colorCombinations.length)
+    const randomDirectionIndex = Math.floor(Math.random() * gradientDirections.length)
+    setGradientStyle({
+      colors: colorCombinations[randomColorIndex],
+      direction: gradientDirections[randomDirectionIndex],
+    })
   }, [])
 
+  const id = Math.random().toString(36).substring(7)
+
   return (
-    <Link
+    <div className="relative w-full h-full overflow-hidden rounded-lg">
+      <div className={`absolute inset-0 ${gradientStyle.direction} ${gradientStyle.colors.from} ${gradientStyle.colors.to}`} />
+      <div className="absolute inset-0 opacity-50 mix-blend-multiply">
+        <svg className='w-full h-full' xmlns="http://www.w3.org/2000/svg">
+          <filter id={`${id}`}>
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter={`url(#${id})`} />
+        </svg>
+      </div>
+      <div className="relative flex items-center justify-center h-full p-6">
+        <h1 className="text-3xl md:text-4xl font-bold text-white text-left leading-tight drop-shadow-lg line-clamp-3">
+          {title}
+        </h1>
+      </div>
+    </div>
+  )
+}
+
+function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false' }) {
+  const [metadata, setMetaData] = useState<Metadata | null>(null)
+
+  useEffect(() => {
+    if (!story.thumbnail) {
+      fetchMetadata(story.url).then(meta => meta && setMetaData(meta))
+    }
+  }, [story.thumbnail, story.url])
+
+  return (
+    <a
       key={story.id}
       href={story.url}
+      title={story.title}
       target="_blank"
       rel="noopener noreferrer"
       className="block"
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={story.thumbnail ?? image}
-        alt={story.title}
-        width={320}
-        height={180}
-        className="w-full h-60 object-cover rounded-md overflow-hidden"
-      />
-      <div className="p-3">
-        <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
-        <p className="text-sm text-muted-foreground">
-          {new URL(story.url).host.replace(/^www\./, '')} <br />
-          {new Date(story.published).toLocaleDateString()}
-        </p>
+      <div className='aspect-video w-full overflow-hidden' title={metadata?.description ?? ''}>
+        {metadata?.thumbnail ?
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={metadata.thumbnail}
+            alt={story.title}
+            className="w-full h-full object-cover rounded-md"
+          />
+          :
+          <Thumbnail title={story.title} />
+        }
       </div>
-    </Link>
+      <div className="flex">
+        {icons === 'true' && (
+          <div className='pt-3 min-w-10'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(story.url).hostname)}.ico`}
+              alt=""
+              className="aspect-square rounded-md w-10 h-10 object-cover" />
+          </div>
+        )}
+        <div className="p-3">
+          <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
+          <p className="text-sm text-muted-foreground">
+            {new URL(story.url).host.replace(/^www\./, '')} {story.author && ` · ${story.author}`} <br />
+            {new Date(story.published).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+    </a>
   )
 }

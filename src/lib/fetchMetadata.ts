@@ -21,37 +21,47 @@
 //   }
 // }
 
-import axios from 'axios';
 import { load } from 'cheerio';
+
+export interface Metadata {
+  title?: string;
+  description?: string;
+  thumbnail?: string;
+  favicon?: string;
+}
 
 export async function fetchMetadata(url: string) {
   try {
     // Fetch the HTML content from the URL
-    const { data: html } = await axios.get(url);
+    const response = await fetch(url);
+
+    // Ensure the request was successful (status code 200)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data: ${response.statusText}`);
+    }
+
+    // Get the HTML content as text
+    const html = await response.text();
+
 
     // Load the HTML using Cheerio for parsing
     const $ = load(html);
 
     // Extract metadata
     const title = $('meta[property="og:title"]').attr('content') || $('title').text();
-    const image = $('meta[property="og:image"]').attr('content');
+    const description = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
+    const thumbnail = $('meta[property="og:image"]').attr('content');
     const favicon = $('link[rel="icon"]').attr('href') || $('link[rel="shortcut icon"]').attr('href');
 
-    // Send metadata as response
-    // res.status(200).json({
-    //   title: title || 'No title found',
-    //   image: image || 'No image found',
-    //   favicon: favicon || 'No favicon found',
-    // });
-    console.log('Metadata:', { title, image, favicon });
+    // console.log('Metadata:', { title, description, thumbnail, favicon });
     return {
       title: title,
-      thumbnail: image,
+      description: description,
+      thumbnail: thumbnail,
       favicon: favicon,
     };
   } catch (error) {
     console.error('Error fetching metadata:', error);
     return null;
-    // res.status(500).json({ error: 'Failed to fetch metadata' });
   }
 }
