@@ -33,6 +33,7 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - [ ] choose what the starting page should display, if indeed it should display anything
 - [ ] add a sidebar
 - [ ] performance work (thumbnail images, display skeleton while loading)
+  - [ ] fix the tailwind css pattern which is over optimistic
 - [ ] branding
   - [ ] name
   - [ ] logo / favicon
