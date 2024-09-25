@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -125,122 +125,124 @@ export default function Feed() {
     <div className="w-full max-w-6xl mx-auto p-4" id='top'>
       <h1 className="text-2xl font-bold">Customizable Feed</h1>
       <p className='mb-8'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
-      <div className="flex justify-between mb-4">
-        {/* tag selection */}
-        <div className="flex flex-wrap gap-2 mr-2">
-          {feeds.map(f => (
+      <Suspense>
+        <div className="flex justify-between mb-4">
+          {/* tag selection */}
+          <div className="flex flex-wrap gap-2 mr-2">
+            {feeds.map(f => (
+              <Badge
+                key={f}
+                variant={"outline"}
+                className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+                onClick={() => setFeeds(feeds => feeds.filter(x => x !== f))}
+              >
+                {f}
+              </Badge>
+            ))}
             <Badge
-              key={f}
-              variant={"outline"}
-              className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
-              onClick={() => setFeeds(feeds => feeds.filter(x => x !== f))}
-            >
-              {f}
-            </Badge>
-          ))}
-          <Badge
-            variant={"secondary"}
-            className={`
+              variant={"secondary"}
+              className={`
               cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10
-            `}
-            onClick={() => setShowAddInput(!showAddInput)}
-          >
-            Add feed
-          </Badge>
-        </div>
-        {/* tag selection end */}
-        <div className='flex gap-2'>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="icons" checked={icons === 'true'} onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} />
-            <label
-              htmlFor="icons"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              `}
+              onClick={() => setShowAddInput(!showAddInput)}
             >
-              icons
-            </label>
+              Add feed
+            </Badge>
           </div>
-          <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
-            {view === 'grid' ? 'List view' : 'Grid view'}
-          </Button>
+          {/* tag selection end */}
+          <div className='flex gap-2'>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="icons" checked={icons === 'true'} onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} />
+              <label
+                htmlFor="icons"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                icons
+              </label>
+            </div>
+            <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
+              {view === 'grid' ? 'List view' : 'Grid view'}
+            </Button>
+          </div>
         </div>
-      </div>
-      {showAddInput && (
-        <div>
+        {showAddInput && (
           <div>
-            <p className="font-semibold mb-4">Popular feeds</p>
-            <div className="flex flex-wrap gap-2">
-              {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
-                <Badge
-                  key={f}
-                  variant={"outline"}
-                  className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
-                  onClick={() => setFeeds(x => x.includes(f) ? x : [...x, f])}
-                >
-                  {f}
-                </Badge>
-              ))}
+            <div>
+              <p className="font-semibold mb-4">Popular feeds</p>
+              <div className="flex flex-wrap gap-2">
+                {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
+                  <Badge
+                    key={f}
+                    variant={"outline"}
+                    className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+                    onClick={() => setFeeds(x => x.includes(f) ? x : [...x, f])}
+                  >
+                    {f}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
+                <Input
+                  type="text"
+                  ref={inputRef}
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Add RSS feed"
+                />
+                <Button type='submit' disabled onSubmit={(e) => {
+                  e.preventDefault()
+                  addFeed()
+                }}>Add</Button>
+              </div>
+              <div />
             </div>
-            <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
-              <Input
-                type="text"
-                ref={inputRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Add RSS feed"
-              />
-              <Button type='submit' disabled onSubmit={(e) => {
-                e.preventDefault()
-                addFeed()
-              }}>Add</Button>
-            </div>
-            <div />
           </div>
-        </div>
-      )}
-      {error ? (
-        <div className="w-full text-center py-4">
-          <p className="text-red-500">{error}</p>
-        </div>
-      ) :
-        isLoading ? (
-          <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        )}
+        {error ? (
+          <div className="w-full text-center py-4">
+            <p className="text-red-500">{error}</p>
           </div>
         ) :
-          view === 'grid' ? (
-            <GridView currentStories={currentStories} icons={icons} />
-          ) : (
-            <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
-          )
-      }
-      <div className="flex justify-between items-center">
-        <Button
-          onClick={() => paginate(currentPage - 1)}
-          disabled={currentPage === 1}
-          variant="outline"
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Previous
-        </Button>
-        <span className="text-foreground">Page {currentPage} of {totalPages}</span>
-        <Button
-          onClick={() => {
-            paginate(currentPage + 1)
-            const topElement = document.getElementById('top');
-            topElement?.scrollIntoView({
-              behavior: 'smooth',
-              block: 'start'
-            });
+          isLoading ? (
+            <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) :
+            view === 'grid' ? (
+              <GridView currentStories={currentStories} icons={icons} />
+            ) : (
+              <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
+            )
+        }
+        <div className="flex justify-between items-center">
+          <Button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            variant="outline"
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+          <span className="text-foreground">Page {currentPage} of {totalPages}</span>
+          <Button
+            onClick={() => {
+              paginate(currentPage + 1)
+              const topElement = document.getElementById('top');
+              topElement?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
 
-          }}
-          disabled={currentPage === totalPages}
-          variant="outline"
-        >
-          Next
-          <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
+            }}
+            disabled={currentPage === totalPages}
+            variant="outline"
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
+      </Suspense >
     </div>
   )
 }
