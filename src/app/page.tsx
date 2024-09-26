@@ -245,18 +245,18 @@ export default function Feed() {
   )
 }
 
-function TableView({ currentStories, currentPage, icons }: { currentStories: Story[], currentPage: number, icons: 'true' | 'false' }) {
+function TableView({ currentStories, icons }: { currentStories: Story[], currentPage: number, icons: 'true' | 'false' }) {
   return (
     <div className="border border-border rounded-md overflow-hidden mb-4">
       <table className="w-full">
         <thead>
           <tr className="bg-muted">
             <th className="text-left p-3 font-semibold">Title</th>
-            <th className="text-right p-3 font-semibold">Index</th>
+            {/* <th className="text-right p-3 font-semibold">Index</th> */}
           </tr>
         </thead>
         <tbody>
-          {currentStories.map((story, index) => (
+          {currentStories.map((story) => (
             <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
               <td className="p-3">
                 <a
@@ -275,18 +275,19 @@ function TableView({ currentStories, currentPage, icons }: { currentStories: Sto
                   )}
                   <div className='flex flex-col'>
                     <span className='hover:underline'>{story.title}</span>
-                    <span className="text-muted-foreground text-sm">
-                      {new URL(story.url).host.replace(/^www\./, '')} {story.author && ` · ${story.author}`}
-                      {` · `}
-                      {new Date(story.published).toLocaleDateString()}
-                    </span>
+                    <div className='text-muted-foreground text-sm'>
+                      <a href={story.url} title={story.url} className="hover:text-black transition-colors">{new URL(story.url).host.replace(/^www\./, '').replace(/.com$/, '')}</a>
+                      <span>
+                        {` · `} {new Date(story.published).toLocaleDateString()}
+                      </span>
+                    </div>
                   </div>
                 </a>
               </td>
-              <td className="p-3 text-right font-mono">
-                {/* {new Date(story.time * 1000).toLocaleDateString()}  */}
+              {/* <td className="p-3 text-right font-mono">
+                 {new Date(story.time * 1000).toLocaleDateString()}
                 {currentPage * 50 + index - 49}
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>
@@ -407,10 +408,10 @@ function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false'
         )}
         <div className="p-3">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
-          <p className="text-sm text-muted-foreground">
-            {new URL(story.url).host.replace(/^www\./, '')} {story.author && ` · ${story.author}`} <br />
-            {new Date(story.published).toLocaleDateString()}
-          </p>
+          <div className="text-sm text-muted-foreground flex flex-col">
+            <a href={story.url} title={story.url} className="hover:text-black transition-colors">{new URL(story.url).host.replace(/^www\./, '').replace(/.com$/, '')}</a>
+            <span>{new Date(story.published).toLocaleDateString()}</span>
+          </div>
         </div>
       </div>
     </a>
