@@ -1,3 +1,5 @@
+"use server"
+
 // export async function fetchMetadata(url: string) {
 //   try {
 //     const response = await fetch(url);
@@ -30,7 +32,7 @@ export interface Metadata {
 export async function fetchMetadata(url: string) {
   try {
     // Fetch the HTML content from the URL
-    const response = await fetch(url, { next: { revalidate: 86400 } });
+    const response = await fetch(url, { next: { revalidate: 86400 } }); // cache for 1 day
 
     // Ensure the request was successful (status code 200)
     if (!response.ok) {

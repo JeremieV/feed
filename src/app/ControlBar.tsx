@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { displayUrl } from "@/lib/helpers"
 import { useRouter } from "next/navigation"
-import { useState, useRef } from 'react'
+import { useState, useRef, KeyboardEvent } from 'react'
+import { ChevronRight } from "lucide-react"
 
 export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
-  const [showAddInput, setShowAddInput] = useState(false)
+  const [expanded, setExpanded] = useState(false)
   const router = useRouter()
 
   function updateIcons(icons: 'true' | 'false') {
@@ -20,6 +21,8 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
   }
 
   function setFeeds(feeds: string[]) {
+    // deduplicate
+    feeds = Array.from(new Set(feeds))
     // this comma separator should work every time... but I'm a bit scared
     router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
@@ -47,25 +50,35 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     inputRef.current?.focus()
   }
 
+  const topics: { name: string, feeds: string[] }[] = [
+    {
+      name: 'World news',
+      feeds: [''],
+    }
+  ]
+
   const popularFeeds = [
-    // news
+    // aggregators
+    "https://news.ycombinator.com/rss",
+
+    // world news
+    "https://www.nytimes.com/section/technology/rss.xml",
+    "https://www.npr.org/rss/rss.php",
+
 
     // tech
     "https://www.wired.com/feed/rss",
+    "https://www.techcrunch.com/feed",
     "https://www.theverge.com/rss/index.xml",
     "https://www.techradar.com/rss",
     "https://www.techrepublic.com/rssfeeds/articles/",
     "https://www.techmeme.com/feed.xml",
-    "https://www.techcrunch.com/feed",
     "https://www.recode.net/rss/index.xml",
     "https://www.polygon.com/rss/index.xml",
     "https://www.pcmag.com/rss.xml",
-    "https://www.npr.org/rss/rss.php",
-    "https://www.nytimes.com/section/technology/rss.xml",
-    // blogs
 
+    // blogs
     "https://voussoir.net/writing/writing.atom",
-    // 
   ]
 
   return (
@@ -73,6 +86,15 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
       <div className="flex justify-between mb-4">
         {/* tag selection */}
         <div className="flex flex-wrap gap-2 mr-2">
+          <Badge
+            role='button'
+            tabIndex={0}
+            onClick={() => setExpanded(!expanded)}
+            onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setExpanded(!expanded)}
+          >
+            <ChevronRight className={`${expanded ? 'rotate-90' : ''} transition-transform`}></ChevronRight>
+            <span className="ml-2">More feeds</span>
+          </Badge>
           {feeds.map(f => (
             <Badge
               key={f}
@@ -82,23 +104,11 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
               variant={"outline"}
               className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
               onClick={() => setFeeds(feeds.filter(x => x !== f))}
-              onKeyDown={() => setFeeds(feeds.filter(x => x !== f))}
+              onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setFeeds(feeds.filter(x => x !== f))}
             >
               {displayUrl(f)}
             </Badge>
           ))}
-          <Badge
-            variant={"secondary"}
-            role='button'
-            tabIndex={0}
-            className={`
-              cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10
-              `}
-            onClick={() => setShowAddInput(!showAddInput)}
-            onKeyDown={() => setShowAddInput(!showAddInput)}
-          >
-            {showAddInput ? 'Collapse' : 'Add feed'}
-          </Badge>
         </div>
         {/* tag selection end */}
         <div className='flex gap-2'>
@@ -110,26 +120,9 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
           </Button>
         </div>
       </div>
-      {showAddInput && (
-        <div>
-          <p className="font-semibold mb-4">Popular feeds</p>
-          <div className="flex flex-wrap gap-2">
-            {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
-              <Badge
-                key={f}
-                title={f}
-                role='button'
-                tabIndex={0}
-                variant={"outline"}
-                className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
-                onClick={() => setFeeds(feeds.includes(f) ? feeds : [...feeds, f])}
-                onKeyDown={() => setFeeds(feeds.includes(f) ? feeds : [...feeds, f])}
-              >
-                {displayUrl(f)}
-              </Badge>
-            ))}
-          </div>
-          <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
+      {expanded && (
+        <div className="my-6">
+          <div className="flex w-full items-center space-x-2 my-4">
             <Input
               type="text"
               ref={inputRef}
@@ -138,13 +131,42 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
               onKeyDown={handleKeyDown}
               placeholder="Add RSS feed"
             />
-            <Button type='submit' disabled onSubmit={(e) => {
-              e.preventDefault()
-              addFeed()
-            }}>Add</Button>
+            <Button onClick={() => addFeed()}>Add</Button>
           </div>
-          <div />
-
+          <div className="flex flex-wrap gap-2 mb-2">
+            <p className="font-semibold">Topics</p>
+            {topics.map(topic => (
+              <Badge
+                key={topic.name}
+                title={topic.name}
+                role='button'
+                tabIndex={0}
+                variant="secondary"
+                // className="cursor-pointer transition-all bg-foreground text-background hover:bg-primary/10"
+                onClick={() => setFeeds([...feeds, ...topic.feeds])}
+                onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setFeeds([...feeds, ...topic.feeds])}
+              >
+                {topic.name}
+              </Badge>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <p className="font-semibold">Popular feeds</p>
+            {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
+              <Badge
+                key={f}
+                title={f}
+                role='button'
+                tabIndex={0}
+                variant={"outline"}
+                className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+                onClick={() => setFeeds([...feeds, f])}
+                onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setFeeds([...feeds, f])}
+              >
+                {displayUrl(f)}
+              </Badge>
+            ))}
+          </div>
         </div>
       )}
     </div>

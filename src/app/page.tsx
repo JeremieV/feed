@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import BottomBar from "./BottomBar"
+// import BottomBar from "./BottomBar"
 import ControlBar from "./ControlBar"
 import Stories from './Stories'
 
@@ -25,7 +25,7 @@ export default async function Page({ searchParams }: { searchParams: { view: str
 import { Loader2 } from "lucide-react";
 function LoadingIndicator() {
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center">
+    <div className="w-full mx-auto p-4 grow flex justify-center items-center">
       <Loader2 className="h-8 w-8 animate-spin text-primary" />
     </div>
   )

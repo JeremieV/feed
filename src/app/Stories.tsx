@@ -14,6 +14,16 @@ export default async function Stories({ view, icons, feeds }: { view: 'list' | '
   const currentStories = stories.slice(indexOfFirstStory, indexOfLastStory)
   // const totalPages = Math.ceil(stories.length / storiesPerPage)
 
+  if (feeds.length === 0) {
+    return (
+      <div className="w-full text-center py-4 grow flex flex-col justify-center">
+        <p className="text-muted-foreground">Welcome to the open feed reader!</p>
+        <p className="text-muted-foreground">Here you can build any feed you like. To save it, bookmark the resulting URL.</p>
+        <p className="text-muted-foreground">Add some feeds to get started (top left)</p>
+      </div>
+    )
+  }
+
   return (
     view === 'grid' ? (
       <GridView currentStories={currentStories} icons={icons} />
@@ -26,11 +36,4 @@ export default async function Stories({ view, icons, feeds }: { view: 'list' | '
 //     <div className="w-full text-center py-4">
 //       <p className="text-red-500">{error}</p>
 //     </div>
-//   ) : feeds.length === 0 ? (
-//     <div className="w-full text-center py-4 grow flex flex-col justify-center">
-//       <p className="text-muted-foreground">Welcome to the open feed reader!</p>
-//       <p className="text-muted-foreground">Here you can build any feed you like. To save it, bookmark the resulting URL.</p>
-//       <p className="text-muted-foreground">Add some feeds to get started (top left)</p>
-//     </div>
-//   )
-//   } */}
+// */}

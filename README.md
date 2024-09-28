@@ -30,10 +30,12 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - feeds are now encoded in the url
   - starting page displays nothing at the start
   - change default to grid view
+  - greatly improved performance due to caching and use of server components
+  - improved the control bar and added "topics" functionality
+  - fixed the "add" button in the rss feed url input
 
 ## Roadmap 
 
-- fix the add button
 - put some better feeds than the AI generated ones
 <!--  -->
 - [ ] get the first 3 users
