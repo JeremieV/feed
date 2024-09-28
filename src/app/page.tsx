@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Story } from "@/lib/types"
 import { fetchRSSFeed } from '@/lib/fetchRSS'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Checkbox } from '@/components/ui/checkbox'
+// import { Checkbox } from '@/components/ui/checkbox'
 
 // skeleton
 
@@ -27,20 +27,24 @@ import { Checkbox } from '@/components/ui/checkbox'
 //   )
 // }
 
+function displayUrl(url: string): string {
+  return new URL(url).host.replace(/^www\./, '').replace(/.com$/, '')
+}
+
 export default function Feed() {
   const router = useRouter()
   const searchParams = useSearchParams();
 
   // view
-  const view: 'list' | 'grid' = searchParams.get('view') === 'grid' ? 'grid' : 'list';
+  const view: 'list' | 'grid' = searchParams.get('view') === 'list' ? 'list' : 'grid';
   function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&icons=${icons}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   // icons
   const icons: 'false' | 'true' = searchParams.get('icons') === 'false' ? 'false' : 'true';
   function updateIcons(icons: 'true' | 'false') {
-    router.push(`?view=${view}&icons=${icons}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   const [stories, setStories] = useState<Story[]>([])
@@ -50,11 +54,17 @@ export default function Feed() {
   const [showAddInput, setShowAddInput] = useState(false)
 
   const storiesPerPage = 50
-  const [feeds, setFeeds] = useState([
-    "https://hnrss.org/best?count=99",
-    "https://www.wired.com/feed/rss",
-    "https://www.theverge.com/rss/index.xml",
-  ])
+  // const [feeds, setFeeds] = useState([
+  //   "https://hnrss.org/best?count=99",
+  //   "https://www.wired.com/feed/rss",
+  //   "https://www.theverge.com/rss/index.xml",
+  // ])
+
+  const feeds: string[] = searchParams.get('feeds')?.split(',').filter(x => x).map(decodeURIComponent) || [];
+  function setFeeds(feeds: string[]) {
+    // this comma separator should work every time... but I'm a bit scared
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+  }
 
   useEffect(() => {
     const fetchStories = async () => {
@@ -73,7 +83,7 @@ export default function Feed() {
       }
     }
     fetchStories()
-  }, [feeds])
+  }, [searchParams])
 
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
@@ -84,7 +94,9 @@ export default function Feed() {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
   const popularFeeds = [
-    // ai generated
+    // news
+
+    // tech
     "https://www.wired.com/feed/rss",
     "https://www.theverge.com/rss/index.xml",
     "https://www.techradar.com/rss",
@@ -95,7 +107,11 @@ export default function Feed() {
     "https://www.polygon.com/rss/index.xml",
     "https://www.pcmag.com/rss.xml",
     "https://www.npr.org/rss/rss.php",
-    "https://www.nytimes.com/section/technology/rss.xml"
+    "https://www.nytimes.com/section/technology/rss.xml",
+    // blogs
+
+    "https://voussoir.net/writing/writing.atom",
+    // 
   ]
 
   // RSS input
@@ -116,49 +132,50 @@ export default function Feed() {
       || feeds.includes(inputValue)) {
       return
     }
-    setFeeds(x => [...x, inputValue])
+    setFeeds([...feeds, inputValue])
     setInputValue('')
     inputRef.current?.focus()
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4" id='top'>
+    <div className="w-full max-w-6xl mx-auto p-4 min-h-svh flex flex-col" id='top'>
       <h1 className="text-2xl font-bold">Customizable Feed</h1>
-      <p className='mb-8'>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
+      <p className='mb-8'><a href="https://github.com/jeremiev/rss-feed" className='underline'>Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
       <div className="flex justify-between mb-4">
         {/* tag selection */}
         <div className="flex flex-wrap gap-2 mr-2">
           {feeds.map(f => (
             <Badge
               key={f}
+              role='button'
+              tabIndex={0}
+              title={f}
               variant={"outline"}
               className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
-              onClick={() => setFeeds(feeds => feeds.filter(x => x !== f))}
+              onClick={() => setFeeds(feeds.filter(x => x !== f))}
+              onKeyDown={() => setFeeds(feeds.filter(x => x !== f))}
             >
-              {f}
+              {displayUrl(f)}
             </Badge>
           ))}
           <Badge
             variant={"secondary"}
+            role='button'
+            tabIndex={0}
             className={`
               cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10
               `}
             onClick={() => setShowAddInput(!showAddInput)}
+            onKeyDown={() => setShowAddInput(!showAddInput)}
           >
-            Add feed
+            {showAddInput ? 'Collapse' : 'Add feed'}
           </Badge>
         </div>
         {/* tag selection end */}
         <div className='flex gap-2'>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="icons" checked={icons === 'true'} onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} />
-            <label
-              htmlFor="icons"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              icons
-            </label>
-          </div>
+          <Button onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} variant="outline">
+            {icons === 'true' ? 'Hide icons' : 'Show icons'}
+          </Button>
           <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
             {view === 'grid' ? 'List view' : 'Grid view'}
           </Button>
@@ -166,43 +183,53 @@ export default function Feed() {
       </div>
       {showAddInput && (
         <div>
-          <div>
-            <p className="font-semibold mb-4">Popular feeds</p>
-            <div className="flex flex-wrap gap-2">
-              {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
-                <Badge
-                  key={f}
-                  variant={"outline"}
-                  className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
-                  onClick={() => setFeeds(x => x.includes(f) ? x : [...x, f])}
-                >
-                  {f}
-                </Badge>
-              ))}
-            </div>
-            <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
-              <Input
-                type="text"
-                ref={inputRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Add RSS feed"
-              />
-              <Button type='submit' disabled onSubmit={(e) => {
-                e.preventDefault()
-                addFeed()
-              }}>Add</Button>
-            </div>
-            <div />
+          <p className="font-semibold mb-4">Popular feeds</p>
+          <div className="flex flex-wrap gap-2">
+            {popularFeeds.filter(f => !feeds.includes(f)).map(f => (
+              <Badge
+                key={f}
+                title={f}
+                role='button'
+                tabIndex={0}
+                variant={"outline"}
+                className={`cursor-pointer transition-all bg-background text-foreground hover:bg-primary/10`}
+                onClick={() => setFeeds(feeds.includes(f) ? feeds : [...feeds, f])}
+                onKeyDown={() => setFeeds(feeds.includes(f) ? feeds : [...feeds, f])}
+              >
+                {displayUrl(f)}
+              </Badge>
+            ))}
           </div>
+          <div className="flex w-full max-w-sm items-center space-x-2 my-4 mb-8">
+            <Input
+              type="text"
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Add RSS feed"
+            />
+            <Button type='submit' disabled onSubmit={(e) => {
+              e.preventDefault()
+              addFeed()
+            }}>Add</Button>
+          </div>
+          <div />
+
         </div>
       )}
       {error ? (
         <div className="w-full text-center py-4">
           <p className="text-red-500">{error}</p>
         </div>
-      ) :
+      ) : feeds.length === 0 ? (
+        <div className="w-full text-center py-4 grow flex flex-col justify-center">
+          <p className="text-muted-foreground">Welcome to the open feed reader!</p>
+          <p className="text-muted-foreground">Here you can build any feed you like. To save it, bookmark the resulting URL.</p>
+          <p className="text-muted-foreground">Add some feeds to get started (top left)</p>
+        </div>
+      )
+        :
         isLoading ? (
           <div className="w-full max-w-6xl mx-auto p-4 flex justify-center items-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -252,7 +279,6 @@ function TableView({ currentStories, icons }: { currentStories: Story[], current
         <thead>
           <tr className="bg-muted">
             <th className="text-left p-3 font-semibold">Title</th>
-            {/* <th className="text-right p-3 font-semibold">Index</th> */}
           </tr>
         </thead>
         <tbody>
@@ -260,7 +286,7 @@ function TableView({ currentStories, icons }: { currentStories: Story[], current
             <tr key={story.id} className={`border-t border-border transition-colors bg-background`}>
               <td className="p-3">
                 <a
-                  href={story.url || `https://news.ycombinator.com/item?id=${story.id}`}
+                  href={story.url}
                   target="_blank"
                   title={story.title}
                   rel="noopener noreferrer"
@@ -276,7 +302,7 @@ function TableView({ currentStories, icons }: { currentStories: Story[], current
                   <div className='flex flex-col'>
                     <span className='hover:underline'>{story.title}</span>
                     <div className='text-muted-foreground text-sm'>
-                      <a href={story.url} title={story.url} className="hover:text-black transition-colors">{new URL(story.url).host.replace(/^www\./, '').replace(/.com$/, '')}</a>
+                      <a href={story.url} title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a>
                       <span>
                         {` · `} {new Date(story.published).toLocaleDateString()}
                       </span>
@@ -284,10 +310,6 @@ function TableView({ currentStories, icons }: { currentStories: Story[], current
                   </div>
                 </a>
               </td>
-              {/* <td className="p-3 text-right font-mono">
-                 {new Date(story.time * 1000).toLocaleDateString()}
-                {currentPage * 50 + index - 49}
-              </td> */}
             </tr>
           ))}
         </tbody>
@@ -368,6 +390,7 @@ function Thumbnail({ title }: { title: string }) {
 
 function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false' }) {
   const [metadata, setMetaData] = useState<Metadata | null>(null)
+  // const metadata = await fetchMetadata(story.url)
 
   useEffect(() => {
     if (!story.thumbnail) {
@@ -409,7 +432,7 @@ function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false'
         <div className="p-3">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col">
-            <a href={story.url} title={story.url} className="hover:text-black transition-colors">{new URL(story.url).host.replace(/^www\./, '').replace(/.com$/, '')}</a>
+            <a href={story.url} title={story.url} className="hover:text-black transition-colors">{displayUrl(story.url)}</a>
             <span>{new Date(story.published).toLocaleDateString()}</span>
           </div>
         </div>

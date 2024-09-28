@@ -25,14 +25,16 @@ I captured the first few iterations as just to show my process ^[And to kind of 
     - [x] list view:
       - [x] added domain name
       - [x] added favicon
+- https://progressive-feed-6.vercel.app 
+  - added vercel analytics 
+  - feeds are now encoded in the url
+  - starting page displays nothing at the start
+  - change default to grid view
 
 ## Roadmap 
 
-- [ ] encode the feeds in the url
-- [ ] transform the Badges into Buttons and use the feed titles rather than the feed urls
-- [ ] starting page should display nothing at the start
-- [ ] display url/author chain like this: `feed -> target url -> article author` (if `author` and `feed != target`)
-- [ ] fix the tailwind css pattern which is over optimistic
+- fix the add button
+- put some better feeds than the AI generated ones
 <!--  -->
 - [ ] get the first 3 users
   - [ ] announce project somewhere
@@ -44,11 +46,14 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - [ ] url
   - [ ] metadata also
 <!--  -->
+- display url/author chain like this: `feed -> target url -> article author` (if `author` and `feed != target`)
 - [ ] add feed/channel pages, where you can see desc, img, icon, and other feeds from url
 - [ ] perform all the metadata requests together in async?
 - [ ] display skeleton while loading
 - [ ] create an rss feed from the feeds selection (meta!)
 - [ ] recommend community curated feeds?
+- [ ] fix the tailwind css pattern which is over optimistic
+- [ ] make the badges focusable
 <!--  -->
 - [ ] more official launch
 <!--  -->
@@ -56,4 +61,4 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - [ ] search for a feed
   - [ ] fetch and cache feed names
   - [ ] fetch and cache url metadata
-  - [ ] and ultimately customer accounts to save subscriptions
+  - [ ] and ultimately customer accounts to save subscriptions, and share lists of feeds (and comments?)

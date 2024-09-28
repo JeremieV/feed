@@ -33,7 +33,7 @@ export interface Metadata {
 export async function fetchMetadata(url: string) {
   try {
     // Fetch the HTML content from the URL
-    const response = await fetch(url);
+    const response = await fetch(url, { next: { revalidate: 86400 } });
 
     // Ensure the request was successful (status code 200)
     if (!response.ok) {
@@ -62,6 +62,11 @@ export async function fetchMetadata(url: string) {
     };
   } catch (error) {
     console.error('Error fetching metadata:', error);
-    return null;
+    return {
+      title: '',
+      description: undefined,
+      thumbnail: undefined,
+      favicon: undefined,
+    };;
   }
 }
