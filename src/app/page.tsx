@@ -1,5 +1,3 @@
-'use client'
-
 import { useState, useEffect, useRef } from 'react'
 import { Loader2, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -31,20 +29,21 @@ function displayUrl(url: string): string {
   return new URL(url).host.replace(/^www\./, '').replace(/.com$/, '')
 }
 
-export default function Feed() {
+// { searchParams: { view: string, icons: string, feeds: string } }
+export default async function Page({ searchParams }) {
   const router = useRouter()
-  const searchParams = useSearchParams();
+  // const searchParams = useSearchParams();
 
   // view
   const view: 'list' | 'grid' = searchParams.get('view') === 'list' ? 'list' : 'grid';
   function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    // router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   // icons
   const icons: 'false' | 'true' = searchParams.get('icons') === 'false' ? 'false' : 'true';
   function updateIcons(icons: 'true' | 'false') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    // router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   const [stories, setStories] = useState<Story[]>([])
@@ -63,27 +62,8 @@ export default function Feed() {
   const feeds: string[] = searchParams.get('feeds')?.split(',').filter(x => x).map(decodeURIComponent) || [];
   function setFeeds(feeds: string[]) {
     // this comma separator should work every time... but I'm a bit scared
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    // router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
-
-  useEffect(() => {
-    const fetchStories = async () => {
-      try {
-        const stories: Story[] = []
-        setIsLoading(true)
-        for (const feed of feeds) {
-          stories.push(...await fetchRSSFeed(feed));
-        }
-        stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
-        setStories(stories)
-        setIsLoading(false)
-      } catch (err) {
-        setError('Failed to fetch stories. Please try again later.')
-        setIsLoading(false)
-      }
-    }
-    fetchStories()
-  }, [searchParams])
 
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage

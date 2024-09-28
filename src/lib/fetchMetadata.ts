@@ -53,7 +53,6 @@ export async function fetchMetadata(url: string) {
     const thumbnail = $('meta[property="og:image"]').attr('content');
     const favicon = $('link[rel="icon"]').attr('href') || $('link[rel="shortcut icon"]').attr('href');
 
-    // console.log('Metadata:', { title, description, thumbnail, favicon });
     return {
       title: title,
       description: description,
