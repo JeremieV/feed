@@ -1,5 +1,3 @@
-'use server'
-
 // export async function fetchMetadata(url: string) {
 //   try {
 //     const response = await fetch(url);
@@ -27,7 +25,6 @@ export interface Metadata {
   title?: string;
   description?: string;
   thumbnail?: string;
-  favicon?: string;
 }
 
 export async function fetchMetadata(url: string) {
@@ -51,13 +48,11 @@ export async function fetchMetadata(url: string) {
     const title = $('meta[property="og:title"]').attr('content') || $('title').text();
     const description = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
     const thumbnail = $('meta[property="og:image"]').attr('content');
-    const favicon = $('link[rel="icon"]').attr('href') || $('link[rel="shortcut icon"]').attr('href');
 
     return {
       title: title,
       description: description,
       thumbnail: thumbnail,
-      favicon: favicon,
     };
   } catch (error) {
     console.error('Error fetching metadata:', error);
@@ -65,7 +60,6 @@ export async function fetchMetadata(url: string) {
       title: '',
       description: undefined,
       thumbnail: undefined,
-      favicon: undefined,
     };;
   }
 }

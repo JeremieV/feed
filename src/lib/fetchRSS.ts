@@ -63,3 +63,23 @@ export async function fetchRSSFeed(url: string): Promise<Story[]> {
     return [];
   }
 }
+
+export async function fetchStories(feedUrls: string[]) {
+  const stories: Story[] = []
+  for (const feed of feedUrls) {
+    stories.push(...await fetchRSSFeed(feed));
+  }
+  stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
+
+  // const fetchStories = async () => {
+  //   try {
+  //     // setStories(stories)
+  //     // setIsLoading(false)
+  //   } catch (err) {
+  //     // setError('Failed to fetch stories. Please try again later.')
+  //     // setIsLoading(false)
+  //   }
+  // }
+
+  return stories;
+}
