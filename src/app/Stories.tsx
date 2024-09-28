@@ -1,18 +1,18 @@
+import { Fragment } from "react";
 import GridView from "./GridView"
 import TableView from "./TableView"
 import { fetchStories } from '@/lib/fetchRSS'
+import BottomBar from "./BottomBar"
 
-export default async function Stories({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
+export default async function Stories({ view, icons, feeds, page }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[], page: number }) {
   const stories = await fetchStories(feeds);
-  const currentPage = 1
+  const currentPage = page
   const storiesPerPage = 60
 
-  // const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
-  // const paginate = (pageNumber: number) => 0
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
   const currentStories = stories.slice(indexOfFirstStory, indexOfLastStory)
-  // const totalPages = Math.ceil(stories.length / storiesPerPage)
+  const totalPages = Math.ceil(stories.length / storiesPerPage)
 
   if (feeds.length === 0) {
     return (
@@ -25,11 +25,14 @@ export default async function Stories({ view, icons, feeds }: { view: 'list' | '
   }
 
   return (
-    view === 'grid' ? (
-      <GridView currentStories={currentStories} icons={icons} />
-    ) : (
-      <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
-    )
+    <Fragment>
+      {view === 'grid' ? (
+        <GridView currentStories={currentStories} icons={icons} />
+      ) : (
+        <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
+      )}
+      <BottomBar currentPage={page} totalPages={totalPages} view={view} icons={icons} feeds={feeds} />
+    </Fragment>
   )
 }
 // {/* {false ? ( // was error

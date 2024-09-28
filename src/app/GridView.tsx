@@ -51,10 +51,10 @@ async function GridComponent({ story, icons }: { story: Story, icons: 'true' | '
               className="aspect-square rounded-md w-10 h-10 object-cover" />
           </div>
         )}
-        <div className="p-3">
+        <div className="p-3 flex flex-col gap-1">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
-          <div className="text-sm text-muted-foreground flex flex-col">
-            <div title={story.url} className="hover:text-black transition-colors">{displayUrl(story.url)}</div>
+          <div className="text-sm text-muted-foreground flex flex-col gap-1">
+            <div title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</div>
             <span>{new Date(story.published).toLocaleDateString()}</span>
           </div>
         </div>
@@ -65,7 +65,7 @@ async function GridComponent({ story, icons }: { story: Story, icons: 'true' | '
 
 async function GridComponentSkeleton() {
   return (
-    <a className="block rounded-md">
+    <div className="block rounded-md text-transparent">
       <div className='aspect-video w-full overflow-hidden'>
         <Skeleton className="w-full h-full object-cover rounded-md" />
       </div>
@@ -73,14 +73,14 @@ async function GridComponentSkeleton() {
         <div className='pt-3 min-w-10'>
           <Skeleton className='aspect-square rounded-md w-10 h-10 object-cover'></Skeleton>
         </div>
-        <div className="p-3">
-          <Skeleton className="font-semibold text-foreground line-clamp-2">Pretending to be a title!</Skeleton>
-          <div className="text-sm text-muted-foreground flex flex-col">
-            <div className="hover:text-black transition-colors">host</div>
-            <span>date skeleton</span>
+        <div className="p-3 flex flex-col gap-1">
+          <Skeleton className="font-semibold line-clamp-2 flex w-full">Pretending to be a title and to be a long title</Skeleton>
+          <div className="text-sm flex flex-col gap-1 max-w-[50%]">
+            <Skeleton>host</Skeleton>
+            <Skeleton>date skeleton</Skeleton>
           </div>
         </div>
       </div>
-    </a>
+    </div>
   )
 }

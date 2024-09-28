@@ -8,16 +8,16 @@ import { useRouter } from "next/navigation"
 import { useState, useRef, KeyboardEvent } from 'react'
 import { ChevronRight } from "lucide-react"
 
-export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
+export default function ControlBar({ view, icons, feeds, page }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[], page: number }) {
   const [expanded, setExpanded] = useState(false)
   const router = useRouter()
 
   function updateIcons(icons: 'true' | 'false') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}&page=${page}`)
   }
 
   function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}&page=${page}`)
   }
 
   function setFeeds(feeds: string[]) {
