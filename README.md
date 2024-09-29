@@ -42,10 +42,13 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - automatically get the RSS feed from a reddit, youtube, medium, or substack url.
   - added some "topics" that allow you to load a combination of pre-curated feeds in one click
   - improved loading skeleton
+  - made the badges keyboard-friendly
+  - changed the date format to a "x hours ago" format
 
 ## Roadmap 
 
 - put some better feeds and "topics" than the AI generated ones
+- add buttons to add topics at the center of the page when feed is empty
 <!--  -->
 - [ ] get the first 3 users
   - [ ] announce project somewhere
@@ -57,14 +60,12 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - [ ] url
   - [ ] metadata also
 <!--  -->
-- display url/author chain like this: `feed -> target url -> article author` (if `author` and `feed != target`)
 - [ ] add feed/channel pages, where you can see desc, img, icon, and other feeds from url
 - [ ] perform all the metadata requests together in async?
 - [ ] display skeleton while loading
 - [ ] create an rss feed from the feeds selection (meta!)
 - [ ] recommend community curated feeds?
 - [ ] fix the tailwind css pattern which is over optimistic
-- [ ] make the badges focusable
 <!--  -->
 - [ ] more official launch
 <!--  -->

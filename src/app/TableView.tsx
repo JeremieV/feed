@@ -1,4 +1,4 @@
-import { displayUrl } from "@/lib/helpers";
+import { displayTimeAgo, displayUrl } from "@/lib/helpers";
 import { Story } from "@/lib/types";
 
 export default function TableView({ currentStories, icons }: { currentStories: Story[], currentPage: number, icons: 'true' | 'false' }) {
@@ -27,7 +27,7 @@ export default function TableView({ currentStories, icons }: { currentStories: S
                     <span className='hover:underline'>{story.title}</span>
                     <div className='text-muted-foreground text-sm flex'>
                       <div title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</div>
-                      <span> {` · `} {new Date(story.published).toLocaleDateString()}</span>
+                      <span> {` · `} {displayTimeAgo(story.published)}</span>
                     </div>
                   </div>
                 </a>

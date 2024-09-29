@@ -6,7 +6,7 @@ const config: Config = {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-		// solves the issue of shadcn dark mode not working
+		// solves the issue of shadcn dark mode not working (but increases build times like crazy)
 		"./**/*.{ts,tsx}"
 	],
   theme: {
