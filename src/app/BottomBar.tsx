@@ -2,19 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation"
 
-export default function BottomBar({ currentPage, totalPages, view, icons, feeds }: { currentPage: number, totalPages: number, view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
-  const router = useRouter()
-
-  function paginate(n: number) {
-    // const topElement = document.getElementById('top');
-    // topElement?.scrollIntoView({
-    //   behavior: 'smooth',
-    //   block: 'start'
-    // });
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}&page=${n}`)
-  }
+export default function BottomBar({ currentPage, totalPages, paginate }: { currentPage: number, totalPages: number, paginate: (n: number) => void }) {
+  // const topElement = document.getElementById('top');
+  // topElement?.scrollIntoView({
+  //   behavior: 'smooth',
+  //   block: 'start'
+  // });
 
   return (
     <div className="flex justify-between items-center">

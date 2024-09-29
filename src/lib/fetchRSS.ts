@@ -38,6 +38,19 @@ import { Story } from "./types"
 
 export async function fetchRSSFeed(url: string): Promise<Story[]> {
   try {
+    // interface RSSFeed {
+    //   status: string
+    //   feed: {
+    //     url: string
+    //     title: string
+    //     link: string
+    //     author: string
+    //     description: string
+    //     image: string
+    //   }
+    //   items: RSSItem[]
+    // }
+
     interface RSSItem {
       title: string
       pubDate: string
@@ -73,16 +86,5 @@ export async function fetchStories(feedUrls: string[]) {
     stories.push(...await fetchRSSFeed(feed));
   }
   stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
-
-  // const fetchStories = async () => {
-  //   try {
-  //     // setStories(stories)
-  //     // setIsLoading(false)
-  //   } catch (err) {
-  //     // setError('Failed to fetch stories. Please try again later.')
-  //     // setIsLoading(false)
-  //   }
-  // }
-
   return stories;
 }

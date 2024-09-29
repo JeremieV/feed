@@ -1,12 +1,29 @@
-import { Fragment } from "react";
+"use client"
+
+import { Fragment, useEffect, useState } from "react";
 import GridView from "./GridView"
 import TableView from "./TableView"
 import { fetchStories } from '@/lib/fetchRSS'
 import BottomBar from "./BottomBar"
+import LoadingIndicator from "@/components/LoadingIndicator";
+import { Story } from "@/lib/types";
 
-export default async function Stories({ view, icons, feeds, page }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[], page: number }) {
-  const stories = await fetchStories(feeds);
-  const currentPage = page
+export default function Stories({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
+  const [stories, setStories] = useState<Story[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  useEffect(() => {
+    async function request() {
+      setIsLoading(true)
+      const stories = await fetchStories(feeds)
+      setStories(stories)
+      setIsLoading(false)
+    }
+
+    request()
+  }, [feeds])
+
   const storiesPerPage = 60
 
   const indexOfLastStory = currentPage * storiesPerPage
@@ -24,6 +41,10 @@ export default async function Stories({ view, icons, feeds, page }: { view: 'lis
     )
   }
 
+  if (isLoading) {
+    return <LoadingIndicator />
+  }
+
   return (
     <Fragment>
       {view === 'grid' ? (
@@ -31,7 +52,7 @@ export default async function Stories({ view, icons, feeds, page }: { view: 'lis
       ) : (
         <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
       )}
-      <BottomBar currentPage={page} totalPages={totalPages} view={view} icons={icons} feeds={feeds} />
+      <BottomBar currentPage={currentPage} totalPages={totalPages} paginate={setCurrentPage} />
     </Fragment>
   )
 }

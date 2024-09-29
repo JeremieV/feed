@@ -1,24 +1,37 @@
-import { fetchMetadata } from "@/lib/fetchMetadata"
-import { displayUrl } from "@/lib/helpers"
+"use client"
+
+import { fetchMetadata, Metadata } from "@/lib/fetchMetadata"
+import { displayTimeAgo, displayUrl } from "@/lib/helpers"
 import { Story } from "@/lib/types"
-import { Suspense } from "react"
 import Thumbnail from "./Thumbnail"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useEffect, useState } from "react"
 
 export default function GridView({ currentStories, icons }: { currentStories: Story[], icons: 'true' | 'false' }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       {currentStories.map((story) => (
-        <Suspense key={story.id} fallback={<GridComponentSkeleton />}>
-          <GridComponent story={story} icons={icons} />
-        </Suspense>
+        <GridComponent key={story.id} story={story} icons={icons} />
       ))}
     </div>
   )
 }
 
-async function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false' }) {
-  const metadata = await fetchMetadata(story.url)
+function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false' }) {
+  const [metadata, setMetadata] = useState<Metadata | null>(null)
+
+  useEffect(() => {
+    async function request() {
+      const metadata = await fetchMetadata(story.url)
+      setMetadata(metadata)
+    }
+
+    request()
+  }, [story.url])
+
+  if (!metadata) {
+    return <GridComponentSkeleton />
+  }
 
   return (
     <a
@@ -55,7 +68,7 @@ async function GridComponent({ story, icons }: { story: Story, icons: 'true' | '
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col gap-1">
             <div title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</div>
-            <span>{new Date(story.published).toLocaleDateString()}</span>
+            <span>{displayTimeAgo(story.published)}</span>
           </div>
         </div>
       </div>
@@ -63,7 +76,7 @@ async function GridComponent({ story, icons }: { story: Story, icons: 'true' | '
   )
 }
 
-async function GridComponentSkeleton() {
+function GridComponentSkeleton() {
   return (
     <div className="block rounded-md text-transparent">
       <div className='aspect-video w-full overflow-hidden'>

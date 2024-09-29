@@ -8,16 +8,16 @@ import { useRouter } from "next/navigation"
 import { useState, useRef, KeyboardEvent } from 'react'
 import { ChevronRight } from "lucide-react"
 
-export default function ControlBar({ view, icons, feeds, page }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[], page: number }) {
+export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
   const [expanded, setExpanded] = useState(false)
   const router = useRouter()
 
   function updateIcons(icons: 'true' | 'false') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}&page=${page}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}&page=${page}`)
+    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   function setFeeds(feeds: string[]) {
@@ -52,7 +52,7 @@ export default function ControlBar({ view, icons, feeds, page }: { view: 'list' 
 
   const topics: { name: string, feeds: string[] }[] = [
     {
-      name: 'World news',
+      name: 'Youtube',
       feeds: [''],
     }
   ]
@@ -62,7 +62,7 @@ export default function ControlBar({ view, icons, feeds, page }: { view: 'list' 
     "https://news.ycombinator.com/rss",
 
     // world news
-    "https://www.nytimes.com/section/technology/rss.xml",
+    "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
     "https://www.npr.org/rss/rss.php",
 
 
@@ -76,6 +76,16 @@ export default function ControlBar({ view, icons, feeds, page }: { view: 'list' 
     "https://www.recode.net/rss/index.xml",
     "https://www.polygon.com/rss/index.xml",
     "https://www.pcmag.com/rss.xml",
+
+    // science
+    "https://www.nature.com/nature.rss",
+    "https://www.wired.com/feed/category/science/latest/rss",
+
+    // business
+    "https://www.wired.com/feed/category/business/latest/rss",
+
+    // gear
+    "https://www.wired.com/feed/category/gear/latest/rss",
 
     // blogs
     "https://voussoir.net/writing/writing.atom",

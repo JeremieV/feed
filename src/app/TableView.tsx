@@ -7,7 +7,7 @@ export default function TableView({ currentStories, icons }: { currentStories: S
       <table className="w-full">
         <tbody>
           {currentStories.map((story) => (
-            <tr key={story.id} className={`first:border-t-0 border-t border-border transition-colors bg-background`}>
+            <tr key={story.id} className="first:border-t-0 border-t border-border">
               <td className="p-3">
                 <a
                   href={story.url}
