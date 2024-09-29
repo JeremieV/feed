@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { displayUrl } from "@/lib/helpers"
+import { displayUrl, urlToRSS } from "@/lib/helpers"
 import { useRouter } from "next/navigation"
 import { useState, useRef, KeyboardEvent } from 'react'
 import { ChevronRight } from "lucide-react"
@@ -38,22 +38,37 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     }
   }
 
-  function addFeed() {
+  async function addFeed() {
     // validate url
     if (!inputValue
       || !inputValue.startsWith('http')
       || feeds.includes(inputValue)) {
       return
     }
-    setFeeds([...feeds, inputValue])
+    setFeeds([...feeds, await urlToRSS(inputValue)])
     setInputValue('')
     inputRef.current?.focus()
   }
 
   const topics: { name: string, feeds: string[] }[] = [
     {
-      name: 'Youtube',
-      feeds: [''],
+      name: 'World news',
+      feeds: [
+        "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+        "https://www.npr.org/rss/rss.php",
+        "https://www.pewresearch.org/feed/",
+      ],
+    },
+    {
+      name: 'Tech',
+      feeds: [
+        "https://www.wired.com/feed/rss",
+        "https://www.techcrunch.com/feed",
+        "https://www.theverge.com/rss/index.xml",
+        "https://www.techradar.com/rss",
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA", // Fireship
+        "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA", // Theo - t3.gg
+      ],
     }
   ]
 
@@ -64,18 +79,15 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     // world news
     "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
     "https://www.npr.org/rss/rss.php",
-
+    "https://www.pewresearch.org/feed/",
 
     // tech
     "https://www.wired.com/feed/rss",
     "https://www.techcrunch.com/feed",
     "https://www.theverge.com/rss/index.xml",
     "https://www.techradar.com/rss",
-    "https://www.techrepublic.com/rssfeeds/articles/",
-    "https://www.techmeme.com/feed.xml",
-    "https://www.recode.net/rss/index.xml",
-    "https://www.polygon.com/rss/index.xml",
-    "https://www.pcmag.com/rss.xml",
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA", // Fireship
+    "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA", // Theo - t3.gg
 
     // science
     "https://www.nature.com/nature.rss",
@@ -83,9 +95,6 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
 
     // business
     "https://www.wired.com/feed/category/business/latest/rss",
-
-    // gear
-    "https://www.wired.com/feed/category/gear/latest/rss",
 
     // blogs
     "https://voussoir.net/writing/writing.atom",
@@ -139,7 +148,7 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Add RSS feed"
+              placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
             />
             <Button onClick={() => addFeed()}>Add</Button>
           </div>

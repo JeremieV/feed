@@ -2,6 +2,10 @@
 
 A simple hacker news clone except it gets progressively more complicated.
 
+Why am I doing this? To get some of my work out there and for this reason:
+
+<blockquote class="reddit-embed-bq" data-embed-showtitle="true" data-embed-showedits="false" data-embed-created="2024-09-29T10:25:15.689Z" data-embed-height="316"><a href="https://www.reddit.com/r/androidapps/comments/1ar43bz/comment/kqhcmdb/">Comment</a><br> by<a href="https://www.reddit.com/user/ButtcheekBaron/">u/ButtcheekBaron</a> from discussion<a href="https://www.reddit.com/r/androidapps/comments/1ar43bz/looking_for_a_good_news_app_tried_google_news_but/"></a><br> in<a href="https://www.reddit.com/r/androidapps/">androidapps</a></blockquote><script async="" src="https://embed.reddit.com/widgets.js" charset="UTF-8"></script>
+
 Can be found here: https://progressive-feed.vercel.app
 
 I captured the first few iterations as just to show my process ^[And to kind of motivate me to have no "zero days"]. It's not worth much in the end because there were many more very slow or broken along the way than I expected:
@@ -35,10 +39,13 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - improved the control bar and added "topics" functionality
   - fixed the "add" button in the rss feed url input
   - improved the feed "control bar" at the top
+  - automatically get the RSS feed from a reddit, youtube, medium, or substack url.
+  - added some "topics" that allow you to load a combination of pre-curated feeds in one click
+  - improved loading skeleton
 
 ## Roadmap 
 
-- put some better feeds than the AI generated ones
+- put some better feeds and "topics" than the AI generated ones
 <!--  -->
 - [ ] get the first 3 users
   - [ ] announce project somewhere
@@ -66,3 +73,4 @@ I captured the first few iterations as just to show my process ^[And to kind of 
   - [ ] fetch and cache feed names
   - [ ] fetch and cache url metadata
   - [ ] and ultimately customer accounts to save subscriptions, and share lists of feeds (and comments?)
+

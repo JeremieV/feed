@@ -36,6 +36,39 @@ import { Story } from "./types"
 //   return stories
 // }
 
+export async function youtubeToRSS(youtubeUrl: string): Promise<string | null> {
+  // check if the url is a youtube.com url
+  console.log("HELLO THERE");
+  // Extract the channel name from the URL
+  const channelNameMatch = youtubeUrl.match(/youtube\.com\/@([a-zA-Z0-9_-]+)/);
+  console.log(channelNameMatch);
+  if (!channelNameMatch || !channelNameMatch[1]) {
+    return null;
+  }
+
+  const channelName = channelNameMatch[1];
+  console.log(channelName);
+
+  // Fetch the channel ID using the YouTube Data API
+  const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${channelName}&key=${process.env.YOUTUBE_API_KEY}`;
+
+  const response = await fetch(apiUrl);
+  if (!response.ok) {
+    console.error(`Failed to fetch channel ID: ${response.statusText}`);
+    return null;
+  }
+
+  const data = await response.json();
+
+  if (data.items && data.items.length > 0) {
+    const channelId = data.items[0].snippet.channelId;
+    // Construct the RSS feed URL
+    return `https://www.youtube.com/feeds/videos.xml?channel_id=${channelId}`;
+  }
+
+  return null; // Return null if the channel isn't found
+}
+
 export async function fetchRSSFeed(url: string): Promise<Story[]> {
   try {
     // interface RSSFeed {
@@ -67,13 +100,16 @@ export async function fetchRSSFeed(url: string): Promise<Story[]> {
       { next: { revalidate: 60 * 60 } } // cache for one hour
     )
     const data = await response.json()
-    return data.items.map((item: RSSItem) => ({
-      id: item.guid,
-      title: item.title,
-      url: item.link,
-      published: item.pubDate,
-      thumnail: item.thumbnail,
-    }))
+    if (data.items) {
+      return data.items.map((item: RSSItem) => ({
+        id: item.guid,
+        title: item.title,
+        url: item.link,
+        published: item.pubDate,
+        thumnail: item.thumbnail,
+      }))
+    }
+    return []
   } catch (error) {
     console.error('Error fetching rss:', error);
     return [];

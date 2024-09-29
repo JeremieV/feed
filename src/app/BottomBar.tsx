@@ -23,7 +23,7 @@ export default function BottomBar({ currentPage, totalPages, paginate }: { curre
       <span className="text-foreground">Page {currentPage} of {totalPages}</span>
       <Button
         onClick={() => paginate(currentPage + 1)}
-        disabled={currentPage === totalPages}
+        disabled={currentPage >= totalPages}
         variant="outline"
       >
         Next
