@@ -50,7 +50,7 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     inputRef.current?.focus()
   }
 
-  const topics: { name: string, feeds: string[] }[] = [
+  const topics: { name: string, feeds: string[] }[] = [ 
     {
       name: 'World news',
       feeds: [
