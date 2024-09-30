@@ -3,9 +3,8 @@
 import ControlBar from "./ControlBar"
 import Stories from './Stories'
 
-export default function Page({ searchParams }: { searchParams: { view: string, icons: string, feeds: string } }) {
+export default function Page({ searchParams }: { searchParams: { view: string, feeds: string } }) {
   const view: 'list' | 'grid' = searchParams.view === 'list' ? 'list' : 'grid';
-  const icons: 'false' | 'true' = searchParams.icons === 'false' ? 'false' : 'true';
   const feeds: string[] = searchParams.feeds?.split(',').filter(x => x).map(decodeURIComponent) || [];
 
   return (
@@ -13,8 +12,8 @@ export default function Page({ searchParams }: { searchParams: { view: string, i
       <h1 className="text-2xl font-bold">Customizable Feed</h1>
       <p className='mb-8'><a href="https://github.com/jeremiev/rss-feed" className='underline'>
         Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
-      <ControlBar view={view} icons={icons} feeds={feeds} />
-      <Stories view={view} icons={icons} feeds={feeds}></Stories>
+      <ControlBar view={view} feeds={feeds} />
+      <Stories view={view} feeds={feeds}></Stories>
     </div>
   )
 }

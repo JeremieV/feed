@@ -37,8 +37,6 @@ import { Story } from "./types"
 // }
 
 export async function youtubeToRSS(youtubeUrl: string): Promise<string | null> {
-  // check if the url is a youtube.com url
-  console.log("HELLO THERE");
   // Extract the channel name from the URL
   const channelNameMatch = youtubeUrl.match(/youtube\.com\/@([a-zA-Z0-9_-]+)/);
   console.log(channelNameMatch);

@@ -52,6 +52,7 @@ Here are the URLs to the first few iterations:
 
 ## Roadmap 
 
+- when changing feeds reset page number to 1, & improve page navigation
 - put some better feeds and "topics" than the AI generated ones
 - add buttons to add topics at the center of the page when feed is empty
 <!--  -->

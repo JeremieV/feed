@@ -2,13 +2,13 @@
 
 import { Fragment, useEffect, useState } from "react";
 import GridView from "./GridView"
-import TableView from "./TableView"
+import ListView from "./ListView"
 import { fetchStories } from '@/lib/fetchRSS'
 import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Story } from "@/lib/types";
 
-export default function Stories({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
+export default function Stories({ view, feeds }: { view: 'list' | 'grid', feeds: string[] }) {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
@@ -48,9 +48,9 @@ export default function Stories({ view, icons, feeds }: { view: 'list' | 'grid',
   return (
     <Fragment>
       {view === 'grid' ? (
-        <GridView currentStories={currentStories} icons={icons} />
+        <GridView currentStories={currentStories} />
       ) : (
-        <TableView currentStories={currentStories} currentPage={currentPage} icons={icons} />
+        <ListView currentStories={currentStories} currentPage={currentPage} />
       )}
       <BottomBar currentPage={currentPage} totalPages={totalPages} paginate={setCurrentPage} />
     </Fragment>

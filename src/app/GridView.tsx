@@ -7,17 +7,17 @@ import Thumbnail from "./Thumbnail"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useEffect, useState } from "react"
 
-export default function GridView({ currentStories, icons }: { currentStories: Story[], icons: 'true' | 'false' }) {
+export default function GridView({ currentStories }: { currentStories: Story[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       {currentStories.map((story) => (
-        <GridComponent key={story.id} story={story} icons={icons} />
+        <GridComponent key={story.id} story={story} />
       ))}
     </div>
   )
 }
 
-function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false' }) {
+function GridComponent({ story }: { story: Story }) {
   const [metadata, setMetadata] = useState<Metadata | null>(null)
 
   useEffect(() => {
@@ -55,15 +55,13 @@ function GridComponent({ story, icons }: { story: Story, icons: 'true' | 'false'
         }
       </div>
       <div className="flex">
-        {icons === 'true' && (
-          <div className='pt-3 min-w-10'>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(story.url).hostname)}.ico`}
-              alt=""
-              className="aspect-square rounded-md w-10 h-10 object-cover" />
-          </div>
-        )}
+        <div className='pt-3 min-w-10'>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(story.url).hostname)}.ico`}
+            alt=""
+            className="aspect-square rounded-md w-10 h-10 object-cover" />
+        </div>
         <div className="p-3 flex flex-col gap-1">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col gap-1">

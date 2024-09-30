@@ -8,23 +8,19 @@ import { useRouter } from "next/navigation"
 import { useState, useRef, KeyboardEvent } from 'react'
 import { ChevronRight } from "lucide-react"
 
-export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'grid', icons: 'true' | 'false', feeds: string[] }) {
+export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', feeds: string[] }) {
   const [expanded, setExpanded] = useState(false)
   const router = useRouter()
 
-  function updateIcons(icons: 'true' | 'false') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
-  }
-
   function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    router.push(`?view=${view}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   function setFeeds(feeds: string[]) {
     // deduplicate
     feeds = Array.from(new Set(feeds))
     // this comma separator should work every time... but I'm a bit scared
-    router.push(`?view=${view}&icons=${icons}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    router.push(`?view=${view}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   // RSS input
@@ -50,7 +46,7 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     inputRef.current?.focus()
   }
 
-  const topics: { name: string, feeds: string[] }[] = [ 
+  const topics: { name: string, feeds: string[] }[] = [
     {
       name: 'World news',
       feeds: [
@@ -139,14 +135,9 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
           ))}
         </div>
         {/* tag selection end */}
-        <div className='flex gap-2'>
-          <Button onClick={() => updateIcons(icons === 'true' ? 'false' : 'true')} variant="outline">
-            {icons === 'true' ? 'Hide icons' : 'Show icons'}
-          </Button>
-          <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
-            {view === 'grid' ? 'List view' : 'Grid view'}
-          </Button>
-        </div>
+        <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
+          {view === 'grid' ? 'List view' : 'Grid view'}
+        </Button>
       </div>
       {expanded && (
         <div className="my-6">
