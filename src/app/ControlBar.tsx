@@ -54,9 +54,16 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
     {
       name: 'World news',
       feeds: [
-        "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+        // "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",
+        "https://feeds.bbci.co.uk/news/world/rss.xml",
         "https://www.npr.org/rss/rss.php",
         "https://www.pewresearch.org/feed/",
+        "http://www.aljazeera.com/xml/rss/all.xml",
+        "https://www.economist.com/latest/rss.xml",
+        "https://www.theguardian.com/world/rss",
+        "http://feeds.feedburner.com/time/world",
+        "http://www.independent.co.uk/news/world/rss",
+        "https://www.vox.com/rss/index.xml",
       ],
     },
     {
@@ -75,6 +82,8 @@ export default function ControlBar({ view, icons, feeds }: { view: 'list' | 'gri
   const popularFeeds = [
     // aggregators
     "https://news.ycombinator.com/rss",
+    "https://rss.beehiiv.com/feeds/4aF2pGVAEN.xml",
+    "https://en.wikinews.org/w/index.php?title=Special:NewsFeed&feed=atom&categories=Published",
 
     // world news
     "https://rss.nytimes.com/services/xml/rss/nyt/World.xml",

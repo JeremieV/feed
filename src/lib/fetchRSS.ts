@@ -96,7 +96,7 @@ export async function fetchRSSFeed(url: string): Promise<Story[]> {
     }
 
     const response = await fetch(
-      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=500&api_key=${process.env.RSS2JSON_API_KEY}`,
+      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=100&api_key=${process.env.RSS2JSON_API_KEY}`,
       { next: { revalidate: 60 * 60 } } // cache for one hour
     )
     const data = await response.json()

@@ -4,16 +4,13 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function BottomBar({ currentPage, totalPages, paginate }: { currentPage: number, totalPages: number, paginate: (n: number) => void }) {
-  // const topElement = document.getElementById('top');
-  // topElement?.scrollIntoView({
-  //   behavior: 'smooth',
-  //   block: 'start'
-  // });
-
   return (
     <div className="flex justify-between items-center">
       <Button
-        onClick={() => paginate(currentPage - 1)}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          paginate(currentPage - 1)
+        }}
         disabled={currentPage === 1}
         variant="outline"
       >
@@ -22,7 +19,10 @@ export default function BottomBar({ currentPage, totalPages, paginate }: { curre
       </Button>
       <span className="text-foreground">Page {currentPage} of {totalPages}</span>
       <Button
-        onClick={() => paginate(currentPage + 1)}
+        onClick={() => {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          paginate(currentPage + 1)
+        }}
         disabled={currentPage >= totalPages}
         variant="outline"
       >
