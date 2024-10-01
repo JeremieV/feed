@@ -43,20 +43,19 @@ The first few iterations have their own URLs because I thought it would be inter
 - https://progressive-feed-3.vercel.app added the option to choose the feed (hacker news / dev.to / RSS feed (draft))
 - https://progressive-feed-4.vercel.app fixed RSS fetching (using RSS2JSON free tier, limited to 10.000 requests/day) and enabled users to read any RSS feed they like. Stories sorted by date published, which has its drawbacks.
 - https://progressive-feed-5.vercel.app this is going to be the last iteration that I deploy to a separate URL. It's mostly a UI update
-  - UI changes
-    - made a toggle to change favicon
-    - display choices are encoded as url parameters so they persist when reloading
-    - grid view:
-      - in the absence of a metadata cover image, I display a generated thumnail
-      - a background gradient, and a noise filter to give them texture, and the title in large, white font on top.
-      - color pairs (and gradient direction) are randomly generated
-      - thumbnail text is trimmed 
-      - added favicon
-      - added author next to domain if there is one (reverted)
-      - can now hover on link title and image to get full title and description respectively
-    - list view:
-      - added domain name
-      - added favicon
+  - made a toggle to change favicon
+  - display choices are encoded as url parameters so they persist when reloading
+  - grid view:
+    - in the absence of a metadata cover image, I display a generated thumnail
+    - a background gradient, and a noise filter to give them texture, and the title in large, white font on top.
+    - color pairs (and gradient direction) are randomly generated
+    - thumbnail text is trimmed 
+    - added favicon
+    - added author next to domain if there is one (reverted)
+    - can now hover on link title and image to get full title and description respectively
+  - list view:
+    - added domain name
+    - added favicon
 - https://progressive-feed-6.vercel.app 
   - added vercel analytics 
   - feeds are now encoded in the url
