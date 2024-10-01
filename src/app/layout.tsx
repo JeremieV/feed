@@ -17,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Progressive Feed",
-  description: "Your feeds in your pocket.",
+  title: "OpenFeed",
+  description: "The open source link aggregator",
 };
 
 export default function RootLayout({
