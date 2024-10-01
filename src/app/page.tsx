@@ -9,7 +9,7 @@ export default function Page({ searchParams }: { searchParams: { view: string, f
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 min-h-svh flex flex-col" id='top'>
-      <h1 className="text-2xl font-bold">Customizable Feed</h1>
+      <h1 className="text-2xl font-bold">OpenFeed</h1>
       <p className='mb-8'><a href="https://github.com/jeremiev/rss-feed" className='underline'>
         Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
       <ControlBar view={view} feeds={feeds} />
