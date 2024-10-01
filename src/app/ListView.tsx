@@ -17,7 +17,7 @@ export default function ListView({ currentStories }: { currentStories: Story[], 
             <span className='hover:underline text-foreground line-clamp-3'>{story.title}</span>
             <div className='text-muted-foreground text-sm flex'>
               <div title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</div>
-              <span> {` · `} {displayTimeAgo(story.published)}</span>
+              <span className="mx-1">{`•`}</span><span>{displayTimeAgo(story.published)}</span>
             </div>
           </div>
         </a>

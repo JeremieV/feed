@@ -16,23 +16,14 @@ export default function Thumbnail({ title }: { title: string }) {
     { from: 'from-orange-500', to: 'to-red-600' },
   ]
 
-  const gradientDirections = [
-    'bg-gradient-to-l',
-    // 'bg-gradient-to-br',
-    // 'bg-gradient-to-tr',
-  ]
-
   const [gradientStyle, setGradientStyle] = useState({
     colors: colorCombinations[0],
-    direction: gradientDirections[0],
   })
 
   useEffect(() => {
     const randomColorIndex = Math.floor(Math.random() * colorCombinations.length)
-    const randomDirectionIndex = Math.floor(Math.random() * gradientDirections.length)
     setGradientStyle({
       colors: colorCombinations[randomColorIndex],
-      direction: gradientDirections[randomDirectionIndex],
     })
   }, [])
 
@@ -40,7 +31,7 @@ export default function Thumbnail({ title }: { title: string }) {
 
   return (
     <div className="relative w-full h-full overflow-hidden rounded-lg">
-      <div className={`absolute inset-0 ${gradientStyle.direction} ${gradientStyle.colors.from} ${gradientStyle.colors.to}`} />
+      <div className={`absolute inset-0 bg-gradient-to-l ${gradientStyle.colors.from} ${gradientStyle.colors.to}`} />
       <div className="absolute inset-0 opacity-50 mix-blend-multiply">
         <svg className='w-full h-full' xmlns="http://www.w3.org/2000/svg">
           <filter id={`${id}`}>
