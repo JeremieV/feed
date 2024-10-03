@@ -8,7 +8,6 @@ If people like this, it might very well become a more fully-featured app and lon
 
 - when changing feeds reset page number to 1, & improve page navigation
 - put some better feeds and "topics" than the AI generated ones
-- add buttons to add topics at the center of the page when feed is empty
 <!--  -->
 - get the first 3 users
   - announce project somewhere
@@ -18,6 +17,7 @@ If people like this, it might very well become a more fully-featured app and lon
   - logo / favicon
   - metadata
 <!--  -->
+- add buttons to add topics at the center of the page when feed is empty
 - add feed/channel pages, where you can see desc, img, icon, and other feeds from url
 - perform all the metadata requests together in async?
 - display skeleton while loading
