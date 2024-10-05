@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { displayUrl, urlToRSS } from "@/lib/helpers"
-import { useState, useRef, KeyboardEvent } from 'react'
+import { useState, useRef } from 'react'
 
 export default function SearchBar() {
   async function addFeed() {
@@ -29,7 +29,7 @@ export default function SearchBar() {
   }
 
   return (
-    <div className="flex w-full items-center space-x-2 py-4">
+    <div className="flex w-full items-center space-x-2 pb-4">
       <Input
         type="text"
         ref={inputRef}

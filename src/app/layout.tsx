@@ -3,7 +3,6 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/react"
-import Scaffold from "./Scaffold";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,9 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className="overscroll-none">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none`}
       >
         <ThemeProvider
           attribute="class"
@@ -37,7 +36,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Scaffold>{children}</Scaffold>
+          {children}
         </ThemeProvider>
         <Analytics />
       </body>

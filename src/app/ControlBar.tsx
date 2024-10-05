@@ -1,9 +1,7 @@
 "use client"
 
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
-import { KeyboardEvent } from 'react'
 
 export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', feeds: string[] }) {
   const router = useRouter()
@@ -31,7 +29,7 @@ export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', fee
         "https://www.economist.com/latest/rss.xml",
         "https://www.theguardian.com/world/rss",
         "http://feeds.feedburner.com/time/world",
-        "http://www.independent.co.uk/news/world/rss",
+        // "http://www.independent.co.uk/news/world/rss", // this one is full of horrible stories
         "https://www.vox.com/rss/index.xml",
       ],
     },
@@ -83,34 +81,20 @@ export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', fee
 
   return (
     <div>
-      <div className="flex justify-between mb-4">
-        {/* tag selection */}
+      <div className="flex justify-between">
         <div className="flex flex-wrap gap-2 mr-2">
-          {/* <Badge
-            role='button'
-            tabIndex={0}
-            onClick={() => setExpanded(!expanded)}
-            onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setExpanded(!expanded)}
-          >
-            <ChevronRight className={`${expanded ? 'rotate-90' : ''} transition-transform`}></ChevronRight>
-            <span className="ml-2">More feeds</span>
-          </Badge> */}
+          {/* topics */}
           {topics.map(topic => (
-            <Badge
+            <Button
               key={topic.name}
               title={topic.name}
-              role='button'
-              tabIndex={0}
               variant="secondary"
-              // className="cursor-pointer transition-all bg-foreground text-background hover:bg-primary/10"
               onClick={() => setFeeds([...feeds, ...topic.feeds])}
-              onKeyDown={(event: KeyboardEvent) => event.key === 'Enter' && setFeeds([...feeds, ...topic.feeds])}
             >
               {topic.name}
-            </Badge>
+            </Button>
           ))}
         </div>
-        {/* tag selection end */}
         <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
           {view === 'grid' ? 'List view' : 'Grid view'}
         </Button>
