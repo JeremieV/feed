@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Suspense } from "react";
 import { Analytics } from "@vercel/analytics/react"
+import Scaffold from "./Scaffold";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -37,9 +37,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Suspense>
-            {children}
-          </Suspense>
+          <Scaffold>{children}</Scaffold>
         </ThemeProvider>
         <Analytics />
       </body>

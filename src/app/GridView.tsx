@@ -1,7 +1,7 @@
 "use client"
 
 import { fetchMetadata, Metadata } from "@/lib/fetchMetadata"
-import { displayTimeAgo, displayUrl } from "@/lib/helpers"
+import { displayTimeAgo, displayUrl, faviconUrl } from "@/lib/helpers"
 import { Story } from "@/lib/types"
 import Thumbnail from "./Thumbnail"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -58,14 +58,14 @@ function GridComponent({ story }: { story: Story }) {
         <div className='pt-3 min-w-10'>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(story.url).hostname)}.ico`}
+            src={faviconUrl(story.url)}
             alt=""
             className="aspect-square rounded-md w-10 h-10 object-cover" />
         </div>
         <div className="p-3 flex flex-col gap-1">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col gap-1">
-            <div title={story.url} className="hover:text-primary transition-colors">{displayUrl(story.url)}</div>
+            <a href={`/feed/${encodeURIComponent(story.feedUrl)}`} title={story.feedTitle} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a>
             <span>{displayTimeAgo(story.published)}</span>
           </div>
         </div>

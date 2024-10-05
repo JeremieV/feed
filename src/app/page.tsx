@@ -1,5 +1,6 @@
 "use client"
 
+import { Fragment } from "react";
 import ControlBar from "./ControlBar"
 import Stories from './Stories'
 
@@ -8,12 +9,9 @@ export default function Page({ searchParams }: { searchParams: { view: string, f
   const feeds: string[] = searchParams.feeds?.split(',').filter(x => x).map(decodeURIComponent) || [];
 
   return (
-    <div className="w-full max-w-6xl mx-auto p-4 min-h-svh flex flex-col" id='top'>
-      <h1 className="text-2xl font-bold">OpenFeed</h1>
-      <p className='mb-8'><a href="https://github.com/jeremiev/feed" className='underline'>
-        Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
+    <Fragment>
       <ControlBar view={view} feeds={feeds} />
       <Stories view={view} feeds={feeds}></Stories>
-    </div>
+    </Fragment>
   )
 }

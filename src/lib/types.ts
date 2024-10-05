@@ -1,6 +1,8 @@
 export interface Story {
-  id: number
+  id: string
   title: string
+  feedUrl: string
+  feedTitle: string
   thumbnail?: string
   url: string
   published: string

@@ -1,7 +1,15 @@
 import { youtubeToRSS } from "./fetchRSS";
 
 export function displayUrl(url: string): string {
-  return new URL(url).host.replace(/^www\./, '').replace(/.com$/, '')
+  return new URL(url).host.replace(/^www\./, '') // .replace(/.com$/, '')
+}
+
+export function faviconUrl(url: string): string {
+  try {
+    return `https://icons.duckduckgo.com/ip3/${encodeURIComponent(new URL(url).hostname)}.ico`;
+  } catch {
+    return "https://icons.duckduckgo.com/ip3/"
+  }
 }
 
 export function displayTimeAgo(dateStr: string): string {

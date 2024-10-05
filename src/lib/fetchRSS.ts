@@ -67,58 +67,79 @@ export async function youtubeToRSS(youtubeUrl: string): Promise<string | null> {
   return null; // Return null if the channel isn't found
 }
 
-export async function fetchRSSFeed(url: string): Promise<Story[]> {
+export interface RSSFeed {
+  status: string
+  feed: RSSFeedMeta
+  items: RSSItem[]
+}
+
+export interface RSSFeedMeta {
+  url: string
+  title: string
+  link: string
+  author: string
+  description: string
+  image: string
+}
+
+export interface RSSItem {
+  title: string
+  pubDate: string
+  link: string
+  guid: string
+  author: string
+  thumbnail: string
+  description: string
+  content: string
+}
+
+export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
   try {
-    // interface RSSFeed {
-    //   status: string
-    //   feed: {
-    //     url: string
-    //     title: string
-    //     link: string
-    //     author: string
-    //     description: string
-    //     image: string
-    //   }
-    //   items: RSSItem[]
-    // }
-
-    interface RSSItem {
-      title: string
-      pubDate: string
-      link: string
-      guid: string
-      author: string
-      thumbnail: string
-      description: string
-      content: string
-    }
-
     const response = await fetch(
       `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=100&api_key=${process.env.RSS2JSON_API_KEY}`,
       { next: { revalidate: 60 * 60 } } // cache for one hour
     )
-    const data = await response.json()
-    if (data.items) {
-      return data.items.map((item: RSSItem) => ({
-        id: item.guid,
-        title: item.title,
-        url: item.link,
-        published: item.pubDate,
-        thumnail: item.thumbnail,
-      }))
-    }
-    return []
+    const data: RSSFeed = await response.json()
+
+    return data;
+    // if (data.items) {
+    //   return data.items.map((item: RSSItem) => ({
+    //     id: item.guid,
+    //     title: item.title,
+    //     feedUrl: url,
+    //     feedTitle: data.feed.title,
+    //     url: item.link,
+    //     published: item.pubDate,
+    //     thumnail: item.thumbnail,
+    //   } as Story))
+    // }
+    // return []
   } catch (error) {
     console.error('Error fetching rss:', error);
-    return [];
+    return null;
   }
 }
 
 export async function fetchStories(feedUrls: string[]) {
   const stories: Story[] = []
   for (const feed of feedUrls) {
-    stories.push(...await fetchRSSFeed(feed));
+    const response = await fetchRSSFeed(feed)
+    const items = response?.items?.map((item) => ({
+      id: item.guid,
+      title: item.title,
+      feedUrl: response.feed.url,
+      feedTitle: response.feed.title,
+      url: item.link,
+      published: item.pubDate,
+      thumnail: item.thumbnail,
+    } as Story));
+    stories.push(...items ?? []);
   }
   stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
   return stories;
+}
+
+export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | undefined> {
+  const response = await fetchRSSFeed(feedUrl);
+  return response?.feed;
 }

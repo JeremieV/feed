@@ -75,3 +75,7 @@ The first few iterations have their own URLs because I thought it would be inter
   - scroll to top when going to next or previous page
   - renamed to OpenFeed
   - changed meta & readme
+
+More recent changes:
+
+- 
