@@ -26,9 +26,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overscroll-none">
+    <html lang="en" suppressHydrationWarning className="overscroll-none h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none h-full`}
       >
         <ThemeProvider
           attribute="class"
