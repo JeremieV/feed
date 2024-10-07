@@ -1,9 +1,11 @@
 "use client"
 
+import { useAtom } from 'jotai'
 import Stories from './Stories'
+import { frontPageFeedsAtom } from '@/lib/state'
 
-export default function Page({ searchParams }: { searchParams: { feeds: string } }) {
-  const feeds: string[] = searchParams.feeds?.split(',').filter(x => x).map(decodeURIComponent) || [];
+export default function Page() {
+  const [feeds] = useAtom(frontPageFeedsAtom)
 
   return (
     <Stories feeds={feeds}></Stories>

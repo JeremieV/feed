@@ -23,8 +23,6 @@ export default function Page({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const feeds: string[] = [];
-
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [subscriptions] = useAtom(subscriptionsAtom)
 
@@ -116,7 +114,7 @@ export default function Page({
               <Button variant="secondary" onClick={() => addFeed()}>Add</Button>
             </div>
             <div className="pb-4 mb-1">
-              <ControlBar feeds={feeds} />
+              <ControlBar />
             </div>
           </div>
 
