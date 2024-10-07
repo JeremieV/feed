@@ -35,9 +35,10 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
       <div className="flex mb-10">
         {/* webiste favicon */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={faviconUrl(feedMeta?.link ?? "")} alt="" className="aspect-square w-20 h-20 object-cover rounded-md mr-10" />
+        <img src={faviconUrl(feedMeta?.link ?? "")} alt="" className="aspect-square w-20 h-20 object-cover rounded-md mr-4" />
         <div>
-          <h1 className="font-semibold text-2xl flex items-center gap-2 mb-4"><a href={feedMeta?.link} target="_blank" className="hover:underline">{feedMeta?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
+          <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={feedMeta?.link} target="_blank" className="hover:underline">{feedMeta?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
+          <p>{feedMeta?.url}</p>
           <p>{feedMeta?.description}</p>
         </div>
       </div>

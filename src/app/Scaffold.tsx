@@ -17,6 +17,7 @@ import {
 import Link from "next/link";
 import { useAtom } from "jotai";
 import { subscriptionsAtom } from "@/lib/state";
+import { useRouter } from "next/navigation";
 
 export default function Page({
   children,
@@ -25,17 +26,14 @@ export default function Page({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [subscriptions] = useAtom(subscriptionsAtom)
+  const router = useRouter();
 
-  async function addFeed() {
-    // validate url
-    // if (!inputValue
-    //   || !inputValue.startsWith('http')
-    //   || feeds.includes(inputValue)) {
-    //   return
-    // }
-    // setFeeds([...feeds, await urlToRSS(inputValue)])
-    // setInputValue('')
-    // inputRef.current?.focus()
+  async function gotoFeedPage() {
+    // navigate to `/feed/${encodeURIComponent(inputValue)}
+    if (inputValue.trim() !== "") {
+      const encodedUrl = encodeURIComponent(inputValue);
+      await router.push(`/feed/${encodedUrl}`);
+    }
   }
 
   const [inputValue, setInputValue] = useState('')
@@ -44,7 +42,7 @@ export default function Page({
     if (e.key === 'Enter') {
       e.preventDefault()
       // validate url
-      addFeed()
+      gotoFeedPage()
     }
   }
 
@@ -111,7 +109,7 @@ export default function Page({
                 onKeyDown={handleKeyDown}
                 placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
               />
-              <Button variant="secondary" onClick={() => addFeed()}>Add</Button>
+              <Button variant="secondary" onClick={() => gotoFeedPage()}>Search</Button>
             </div>
             <div className="pb-4 mb-1">
               <ControlBar />
