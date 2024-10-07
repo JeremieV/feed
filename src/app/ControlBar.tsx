@@ -1,23 +1,34 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
+import { viewAtom } from "@/lib/state"
+import { useAtom } from "jotai"
 import { useRouter } from "next/navigation"
 
-export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', feeds: string[] }) {
+export default function ControlBar({ feeds }: { feeds: string[] }) {
   const router = useRouter()
-
-  function updateView(view: 'list' | 'grid') {
-    router.push(`?view=${view}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
-  }
+  const [view, setView] = useAtom(viewAtom)
 
   function setFeeds(feeds: string[]) {
     // deduplicate
     feeds = Array.from(new Set(feeds))
     // this comma separator should work every time... but I'm a bit scared
-    router.push(`?view=${view}&feeds=${feeds.map(encodeURIComponent).join(',')}`)
+    router.push(`?feeds=${feeds.map(encodeURIComponent).join(',')}`)
   }
 
   const topics: { name: string, feeds: string[] }[] = [
+    {
+      name: 'popular',
+      feeds: [],
+    },
+    {
+      name: 'subscriptions',
+      feeds: [],
+    },
+    {
+      name: 'recommended',
+      feeds: [],
+    },
     {
       name: 'world news',
       feeds: [
@@ -95,8 +106,8 @@ export default function ControlBar({ view, feeds }: { view: 'list' | 'grid', fee
             </Button>
           ))}
         </div>
-        <Button onClick={() => updateView(view === 'list' ? 'grid' : 'list')} variant="outline">
-          {view === 'grid' ? 'List view' : 'Grid view'}
+        <Button onClick={() => setView(view === 'list' ? 'grid' : 'list')} variant="outline">
+          {view === 'grid' ? 'List' : 'Grid'}
         </Button>
       </div>
     </div>

@@ -7,11 +7,14 @@ import { fetchStories } from '@/lib/fetchRSS'
 import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { Story } from "@/lib/types";
+import { useAtom } from "jotai";
+import { viewAtom } from "@/lib/state";
 
-export default function Stories({ view, feeds }: { view: 'list' | 'grid', feeds: string[] }) {
+export default function Stories({ feeds }: { feeds: string[] }) {
   const [stories, setStories] = useState<Story[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
+  const [view] = useAtom(viewAtom)
 
   useEffect(() => {
     async function request() {

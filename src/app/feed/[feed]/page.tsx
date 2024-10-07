@@ -41,7 +41,7 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
           <p>{feedMeta?.description}</p>
         </div>
       </div>
-      <Stories feeds={[decodeURIComponent(params.feed)]} view="list" />
+      <Stories feeds={[decodeURIComponent(params.feed)]} />
     </div>
   )
 }

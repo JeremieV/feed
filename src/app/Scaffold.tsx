@@ -15,23 +15,18 @@ import {
   DialogPanel,
 } from '@headlessui/react'
 import Link from "next/link";
+import { useAtom } from "jotai";
+import { subscriptionsAtom } from "@/lib/state";
 
 export default function Page({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const view: 'list' | 'grid' = 'grid';
   const feeds: string[] = [];
 
   const [sidebarOpen, setSidebarOpen] = useState(true)
-
-  const subscriptions: { name: string, url: string }[] = [
-    { name: "BBC", url: "https://feeds.bbci.co.uk/news/world/rss.xml" },
-    { name: "NPR", url: "https://www.npr.org/rss/rss.php" },
-    { name: "Pew Research", url: "https://www.pewresearch.org/feed/" },
-    { name: "Al Jazeera", url: "http://www.aljazeera.com/xml/rss/all.xml" },
-  ]
+  const [subscriptions] = useAtom(subscriptionsAtom)
 
   async function addFeed() {
     // validate url
@@ -121,7 +116,7 @@ export default function Page({
               <Button variant="secondary" onClick={() => addFeed()}>Add</Button>
             </div>
             <div className="pb-4 mb-1">
-              <ControlBar view={view} feeds={feeds} />
+              <ControlBar feeds={feeds} />
             </div>
           </div>
 
