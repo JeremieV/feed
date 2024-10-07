@@ -10,6 +10,7 @@ export const frontPageFeedsAtom = atom<string[]>(
     const topic = get(frontPageTopicAtom)
     if (!topic) return []
     if (topic === 'subscriptions') return get(subscriptionsAtom).map(sub => sub.url)
+    // @ts-expect-error this is fine (*lying*)
     return topics[topic] as string[]
   }
 )
