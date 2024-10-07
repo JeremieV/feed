@@ -57,11 +57,11 @@ export default function Page({
 
   const Logo = () => (
     <div className="h-16 flex items-center">
-      <Button variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)}>
+      <Button variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
         <span className="sr-only">Open sidebar</span>
         <Menu />
       </Button>
-      <div className="grow text-center">
+      <div>
         <h1 className="text-xl font-bold"><a href="/">OpenFeed</a></h1>
       </div>
     </div>
@@ -88,7 +88,7 @@ export default function Page({
     <>
       {/* Mobile sidebar */}
       <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
-        <DialogBackdrop transition className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
+        <DialogBackdrop transition className="fixed inset-0 bg-black/60 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
         <div className="fixed inset-0 flex">
           <DialogPanel transition className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full">
             <SideBar />
@@ -103,30 +103,32 @@ export default function Page({
 
       {/* Main content area */}
       <div className="lg:pl-72">
-        {/* header */}
-        <div className="sticky top-0 z-40 bg-card px-4">
-          <div className="flex h-16 shrink-0 items-center gap-x-2">
-            <div className="lg:hidden">
-              <Logo />
+        <div className="max-w-6xl mx-auto">
+          {/* header */}
+          <div className="sticky top-0 z-40 bg-card px-4">
+            <div className="flex h-16 shrink-0 items-center gap-x-2">
+              <div className="lg:hidden">
+                <Logo />
+              </div>
+              <Input
+                type="text"
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
+              />
+              <Button variant="secondary" onClick={() => addFeed()}>Add</Button>
             </div>
-            <Input
-              type="text"
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
-            />
-            <Button variant="secondary" onClick={() => addFeed()}>Add</Button>
+            <div className="pb-4 mb-1">
+              <ControlBar view={view} feeds={feeds} />
+            </div>
           </div>
-          <div className="pt-2 pb-4 mb-1">
-            <ControlBar view={view} feeds={feeds} />
-          </div>
-        </div>
 
-        <main className="w-full max-w-6xl mx-auto flex flex-col pb-4 px-4" id='top'>
-          {children}
-        </main>
+          <main className="flex flex-col pb-4 px-4" id='top'>
+            {children}
+          </main>
+        </div>
       </div>
     </>
   )
