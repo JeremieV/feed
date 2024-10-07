@@ -1,5 +1,4 @@
 "use client"
-// https%3A%2F%2Fwww.vox.com%2Frss%2Findex.xml
 
 import { useEffect, useState } from "react";
 import Stories from "../../Stories";

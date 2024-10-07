@@ -24,7 +24,7 @@ export default function Page({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [subscriptions] = useAtom(subscriptionsAtom)
   const router = useRouter();
 
