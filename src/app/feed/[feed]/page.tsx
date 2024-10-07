@@ -22,7 +22,7 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
     request()
   }, [])
 
-  // should be a loading indicator instead
+  // TODO should be a loading indicator instead
   if (!feedMeta) {
     return <div></div>
   }
@@ -30,12 +30,12 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
   return (
     <div>
       {/* feed cover image */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      {feedMeta?.image && <img src={feedMeta?.image} alt="" className="w-full rounded-md mb-6" />}
+      {/* commented next line because of horrendous result */}
+      {/* {feedMeta?.image && <img src={feedMeta?.image} alt="" className="w-full rounded-md mb-6" />} */}
       <div className="flex mb-10">
         {/* webiste favicon */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={faviconUrl(feedMeta?.link ?? "")} alt="" className="aspect-square w-20 h-20 object-cover rounded-md p-1 mr-10" />
+        <img src={faviconUrl(feedMeta?.link ?? "")} alt="" className="aspect-square w-20 h-20 object-cover rounded-md mr-10" />
         <div>
           <h1 className="font-semibold text-2xl flex items-center gap-2 mb-4"><a href={feedMeta?.link} target="_blank" className="hover:underline">{feedMeta?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
           <p>{feedMeta?.description}</p>

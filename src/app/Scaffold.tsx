@@ -2,6 +2,7 @@
 
 import ControlBar from "./ControlBar"
 import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button"
 import { faviconUrl } from "@/lib/helpers";
 
 import { Input } from "@/components/ui/input";
@@ -13,6 +14,7 @@ import {
   DialogBackdrop,
   DialogPanel,
 } from '@headlessui/react'
+import Link from "next/link";
 
 export default function Page({
   children,
@@ -73,11 +75,11 @@ export default function Page({
       </p>
       <h2 className="font-semibold mb-2">Subscriptions</h2>
       {subscriptions.map(s => (
-        <Button variant="ghost" className="justify-start gap-4 overflow-clip" key={s.url}>
+        <Link href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={faviconUrl(s.url)} alt="" className="aspect-square w-6 h-6 rounded-md" />
           <span>{s.name}</span>
-        </Button>
+        </Link>
       ))}
     </div>
   )
