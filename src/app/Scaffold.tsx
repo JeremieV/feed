@@ -75,7 +75,7 @@ export default function Page({
       </p>
       <h2 className="font-semibold mb-2">Subscriptions</h2>
       {subscriptions.map(s => (
-        <Link href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
+        <Link onClick={() => setSidebarOpen(false)} href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={faviconUrl(s.url)} alt="" className="aspect-square w-6 h-6 rounded-md" />
           <span>{s.name}</span>
