@@ -102,18 +102,6 @@ export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
     const data: RSSFeed = await response.json()
 
     return data;
-    // if (data.items) {
-    //   return data.items.map((item: RSSItem) => ({
-    //     id: item.guid,
-    //     title: item.title,
-    //     feedUrl: url,
-    //     feedTitle: data.feed.title,
-    //     url: item.link,
-    //     published: item.pubDate,
-    //     thumnail: item.thumbnail,
-    //   } as Story))
-    // }
-    // return []
   } catch (error) {
     console.error('Error fetching rss:', error);
     return null;

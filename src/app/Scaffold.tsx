@@ -53,7 +53,7 @@ export default function Page({
         <Menu />
       </Button>
       <div>
-        <h1 className="text-xl font-bold"><a href="/">OpenFeed</a></h1>
+        <h1 className="text-xl font-bold"><Link href="/">OpenFeed</Link></h1>
       </div>
     </div>
   )
@@ -93,33 +93,31 @@ export default function Page({
       </div>
 
       {/* Main content area */}
-      <div className="lg:pl-72">
-        <div className="max-w-6xl mx-auto">
-          {/* header */}
-          <div className="sticky top-0 z-40 bg-card px-4">
-            <div className="flex h-16 shrink-0 items-center gap-x-2">
-              <div className="lg:hidden">
-                <Logo />
-              </div>
-              <Input
-                type="text"
-                ref={inputRef}
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
-              />
-              <Button variant="secondary" onClick={() => gotoFeedPage()}>Search</Button>
+      <div className="lg:pl-72 min-h-screen [&>*]:max-w-6xl [&>*]:mx-auto">
+        {/* header */}
+        <div className="sticky top-0 z-40 bg-card px-4">
+          <div className="flex h-16 shrink-0 items-center gap-x-2">
+            <div className="lg:hidden">
+              <Logo />
             </div>
-            <div className="pb-4 mb-1">
-              <ControlBar />
-            </div>
+            <Input
+              type="text"
+              ref={inputRef}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
+            />
+            <Button variant="secondary" onClick={() => gotoFeedPage()}>Search</Button>
           </div>
-
-          <main className="flex flex-col pb-4 px-4" id='top'>
-            {children}
-          </main>
+          <div className="pb-4 mb-1">
+            <ControlBar />
+          </div>
         </div>
+
+        <main className="flex flex-col pb-4 px-4 grow" id='top'>
+          {children}
+        </main>
       </div>
     </>
   )

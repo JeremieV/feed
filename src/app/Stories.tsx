@@ -1,34 +1,35 @@
 "use client"
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import GridView from "./GridView"
 import ListView from "./ListView"
 import { fetchStories } from '@/lib/fetchRSS'
 import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
-import { Story } from "@/lib/types";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/state";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Stories({ feeds }: { feeds: string[] }) {
-  const [stories, setStories] = useState<Story[]>([])
-  const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [view] = useAtom(viewAtom)
 
-  useEffect(() => {
-    async function request() {
-      setIsLoading(true)
-      const stories = await fetchStories(feeds)
-      setStories(stories)
-      setIsLoading(false)
-    }
+  const { isPending, error, data: stories } = useQuery({
+    queryKey: ['landing', feeds],
+    queryFn: async () => {
+      return await fetchStories(feeds)
+    },
+  })
 
-    request()
-  }, [feeds])
+  if (isPending) {
+    return <LoadingIndicator />
+  }
+
+  if (error) {
+    return <div>Error: {error.name} {error.message}</div>
+  }
 
   const storiesPerPage = 60
-
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
   const currentStories = stories.slice(indexOfFirstStory, indexOfLastStory)
@@ -44,10 +45,6 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     )
   }
 
-  if (isLoading) {
-    return <LoadingIndicator />
-  }
-
   return (
     <Fragment>
       {view === 'grid' ? (
@@ -59,8 +56,3 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     </Fragment>
   )
 }
-// {/* {false ? ( // was error
-//     <div className="w-full text-center py-4">
-//       <p className="text-red-500">{error}</p>
-//     </div>
-// */}

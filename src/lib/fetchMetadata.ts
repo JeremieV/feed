@@ -57,7 +57,6 @@ export async function fetchMetadata(url: string) {
       thumbnail: thumbnail,
     };
   } catch (error) {
-    console.error('Error fetching metadata:', error);
     return {
       title: '',
       description: undefined,

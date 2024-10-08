@@ -32,7 +32,12 @@ If people like this, it might very well become a more fully-featured app and lon
   - fetch and cache url metadata
   - and ultimately customer accounts to save subscriptions, and share lists of feeds (and comments?)
 
-## Changelog
+## Changelog (most recent first)
+
+- 2024-10-08 added subscribe button
+- 2024-10-08 added feed pages, where you can see description, icon, items from url
+
+## Changelog (old)
 
 The first few iterations have their own URLs because I thought it would be interesting to see how my open-ended project evolved. (I started with the following theme: "A simple hacker news clone except it gets progressively more complicated.")
 
@@ -73,8 +78,3 @@ The first few iterations have their own URLs because I thought it would be inter
   - scroll to top when going to next or previous page
   - renamed to OpenFeed
   - changed meta & readme
-
-More recent changes:
-
-- added feed pages, where you can see description, icon, items from url
-- added subscribe button

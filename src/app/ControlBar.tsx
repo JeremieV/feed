@@ -17,7 +17,7 @@ export default function ControlBar() {
               key={topic}
               title={topic}
               variant={topic === frontPageTopic ? "default" : "secondary"}
-              onClick={() => setFrontPageTopic(topic)}
+              onClick={() => topic === frontPageTopic ? setFrontPageTopic(undefined) : setFrontPageTopic(topic)}
             >
               {topic}
             </Button>
