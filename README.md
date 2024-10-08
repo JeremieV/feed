@@ -8,6 +8,8 @@ If people like this, it might very well become a more fully-featured app and lon
 
 - when changing feeds reset page number to 1, & improve page navigation
 - put some better feeds and "topics" than the AI generated ones
+- grow sidebar to screen height on mobile
+- import/export OPML
 <!--  -->
 - get the first 3 users
   - announce project somewhere
@@ -17,12 +19,8 @@ If people like this, it might very well become a more fully-featured app and lon
   - logo / favicon
   - metadata
 <!--  -->
-- add buttons to add topics at the center of the page when feed is empty
-- add feed/channel pages, where you can see desc, img, icon, and other feeds from url
-- perform all the metadata requests together in async?
-- display skeleton while loading
-- create an rss feed from the feeds selection (meta!)
-- recommend community curated feeds?
+- display skeleton while loading in list view
+- let users create combined feeds
 - fix the tailwind css pattern which is over optimistic
 - choose a license (I am thinking about https://choosealicense.com/licenses/unlicense/)
 <!--  -->
@@ -78,4 +76,5 @@ The first few iterations have their own URLs because I thought it would be inter
 
 More recent changes:
 
-- 
+- added feed pages, where you can see description, icon, items from url
+- added subscribe button

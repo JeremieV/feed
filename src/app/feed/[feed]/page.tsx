@@ -5,10 +5,14 @@ import Stories from "../../Stories";
 import { fetchFeedMeta, RSSFeedMeta } from "@/lib/fetchRSS";
 import { faviconUrl } from "@/lib/helpers";
 import { SquareArrowOutUpRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { subscriptionsAtom } from "@/lib/state";
+import { useAtom } from "jotai";
 
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
   const [feedMeta, setFeedMeta] = useState<RSSFeedMeta | null>(null)
+  const [subscriptions, setSubscriptions] = useAtom(subscriptionsAtom)
 
   useEffect(() => {
     async function request() {
@@ -38,7 +42,11 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
         <div>
           <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={feedMeta?.link} target="_blank" className="hover:underline">{feedMeta?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
           <p>{feedMeta?.url}</p>
-          <p>{feedMeta?.description}</p>
+          <p className="mb-4">{feedMeta?.description}</p>
+          {subscriptions.find(s => s.url === decodeURIComponent(params.feed)) ?
+            <Button onClick={() => setSubscriptions(subscriptions.filter(s => s.url !== feedMeta.url))} variant="outline">Unsubscribe</Button> :
+            <Button onClick={() => setSubscriptions([{ name: feedMeta.title, url: feedMeta.url }, ...subscriptions])}>Subscribe</Button>
+          }
         </div>
       </div>
       <Stories feeds={[decodeURIComponent(params.feed)]} />
