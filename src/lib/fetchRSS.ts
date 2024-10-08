@@ -109,23 +109,31 @@ export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
 }
 
 export async function fetchStories(feedUrls: string[]) {
-  const stories: Story[] = []
-  for (const feed of feedUrls) {
-    const response = await fetchRSSFeed(feed)
-    const items = response?.items?.map((item) => ({
+  const fetchFeedPromises = feedUrls.map(async (feed) => {
+    const response = await fetchRSSFeed(feed);
+    return response?.items?.map((item) => ({
       id: item.guid,
       title: item.title,
       feedUrl: response.feed.url,
       feedTitle: response.feed.title,
       url: item.link,
       published: item.pubDate,
-      thumnail: item.thumbnail,
-    } as Story));
-    stories.push(...items ?? []);
+      thumbnail: item.thumbnail,
+    } as Story)) ?? [];
+  });
+
+  try {
+    const storiesArrays = await Promise.all(fetchFeedPromises);
+    const stories: Story[] = storiesArrays.flat();
+    stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+
+    return stories;
+  } catch (error) {
+    console.error('Error fetching stories:', error);
+    return [];
   }
-  stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime())
-  return stories;
 }
+
 
 export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | undefined> {
   const response = await fetchRSSFeed(feedUrl);
