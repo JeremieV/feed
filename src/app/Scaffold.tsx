@@ -48,7 +48,7 @@ export default function Page({
 
   const Logo = () => (
     <div className="h-16 flex items-center">
-      <Button variant="ghost" onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
+      <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
         <span className="sr-only">Open sidebar</span>
         <Menu />
       </Button>

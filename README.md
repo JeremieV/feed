@@ -6,7 +6,6 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Roadmap 
 
-- when changing feeds reset page number to 1, & improve page navigation
 - put some better feeds and "topics" than the AI generated ones
 - grow sidebar to screen height on mobile
 - import/export OPML
@@ -34,8 +33,9 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Changelog (most recent first)
 
-- 2024-10-08 added subscribe button
-- 2024-10-08 added feed pages, where you can see description, icon, items from url
+- 2024-10-08 fix: reset page number to 1 when changing feeds
+- 2024-10-08 feat: added subscribe button
+- 2024-10-08 feat: added feed pages, where you can see description, icon, items from url
 
 ## Changelog (old)
 

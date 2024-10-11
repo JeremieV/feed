@@ -1,6 +1,6 @@
 "use client"
 
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import GridView from "./GridView"
 import ListView from "./ListView"
 import { fetchStories } from '@/lib/fetchRSS'
@@ -13,6 +13,10 @@ import { useQuery } from "@tanstack/react-query";
 export default function Stories({ feeds }: { feeds: string[] }) {
   const [currentPage, setCurrentPage] = useState(1)
   const [view] = useAtom(viewAtom)
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [feeds])
 
   const { isPending, error, data: stories } = useQuery({
     queryKey: ['landing', feeds],
@@ -39,7 +43,6 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     return (
       <div className="w-full text-center py-4 grow flex flex-col justify-center">
         <p className="text-muted-foreground">Welcome to the open feed reader!</p>
-        <p className="text-muted-foreground">Here you can build any feed you like. To save it, bookmark the resulting URL.</p>
         <p className="text-muted-foreground">Add some feeds to get started (top left)</p>
       </div>
     )
