@@ -6,8 +6,11 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Roadmap 
 
-- put some better feeds and "topics" than the AI generated ones
-- grow sidebar to screen height on mobile
+- review the youtube etc compatibility (and activitypub)
+- paginate API endpoint for feed items
+- implement the search function
+- add the created_at and updated_at for all database tables
+- curate "topics" better than the AI generated ones
 - import/export OPML
 <!--  -->
 - get the first 3 users
@@ -24,15 +27,11 @@ If people like this, it might very well become a more fully-featured app and lon
 - choose a license (I am thinking about https://choosealicense.com/licenses/unlicense/)
 <!--  -->
 - more official launch
-<!--  -->
-- need an api that will do: 
-  - search for a feed
-  - fetch and cache feed names
-  - fetch and cache url metadata
-  - and ultimately customer accounts to save subscriptions, and share lists of feeds (and comments?)
 
 ## Changelog (most recent first)
 
+- 2024-10-11 sidebar now grows to screen height on mobile
+- 2024-10-11 feat: added database, endpoints to manage and update feeds
 - 2024-10-08 fix: reset page number to 1 when changing feeds
 - 2024-10-08 feat: added subscribe button
 - 2024-10-08 feat: added feed pages, where you can see description, icon, items from url

@@ -59,19 +59,21 @@ export default function Page({
   )
 
   const SideBar = () => (
-    <div className="h-svh overflow-hidden sticky top-0 flex flex-col px-4 bg-card border-r">
-      <Logo />
-      <p className='p-8 mb-4 text-sm text-center bg-muted rounded-md text-muted-foreground'>
-        <a href="https://github.com/jeremiev/feed" className='underline'>Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a>
-      </p>
-      <h2 className="font-semibold mb-2">Subscriptions</h2>
-      {subscriptions.map(s => (
-        <Link onClick={() => setSidebarOpen(false)} href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={faviconUrl(s.url)} alt="" className="aspect-square w-6 h-6 rounded-md" />
-          <span>{s.name}</span>
-        </Link>
-      ))}
+    <div className="h-screen overflow-hidden sticky top-0 bg-card border-r">
+      <div className="h-svh flex flex-col overflow-y-scroll px-4">
+        <Logo />
+        <p className='p-8 mb-4 text-sm text-center bg-muted rounded-md text-muted-foreground'>
+          <a href="https://github.com/jeremiev/feed" className='underline'>Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a>
+        </p>
+        <h2 className="font-semibold mb-2">Subscriptions</h2>
+        {subscriptions.map(s => (
+          <Link onClick={() => setSidebarOpen(false)} href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={faviconUrl(s.url)} alt="" className="aspect-square w-6 h-6 rounded-md" />
+            <span>{s.name}</span>
+          </Link>
+        ))}
+      </div>
     </div>
   )
 
