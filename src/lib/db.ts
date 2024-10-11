@@ -3,12 +3,8 @@ import { drizzle } from 'drizzle-orm/vercel-postgres';
 import {
   pgTable,
   text,
-  // serial,
-  // timestamp,
-  // uniqueIndex,
   primaryKey,
   date,
-  varchar
 } from 'drizzle-orm/pg-core';
 
 /**
@@ -37,18 +33,18 @@ links
 
 // Feeds Table
 export const feeds = pgTable("feeds", {
-  url: varchar("url", { length: 255 }).primaryKey(),   // Primary key (URL of the feed)
+  url: text("url").primaryKey(),   // Primary key (URL of the feed)
   title: text("title").notNull(),                      // Title of the feed
-  link: varchar("link", { length: 255 }).notNull(),    // Link to the feed's homepage
+  link: text("link").notNull(),    // Link to the feed's homepage
   description: text("description").notNull(),          // Description of the feed
-  image: varchar("image", { length: 255 }).notNull()   // Image URL for the feed
+  image: text("image").notNull()   // Image URL for the feed
 });
 
 // Feed Items Table
 export const feedItems = pgTable("feed_items", {
-  feedUrl: varchar("feed_url", { length: 255 }).notNull().references(() => feeds.url),   // Foreign key referencing 'feeds.url'
+  feedUrl: text("feed_url").notNull().references(() => feeds.url),   // Foreign key referencing 'feeds.url'
   pubDate: date("pub_date").notNull(),                      // Publication date of the item
-  linkUrl: varchar("link_url", { length: 255 }).notNull().references(() => links.url),   // Foreign key referencing 'links.url'
+  linkUrl: text("link_url").notNull().references(() => links.url),   // Foreign key referencing 'links.url'
 },
   (table) => {
     return {
@@ -59,10 +55,10 @@ export const feedItems = pgTable("feed_items", {
 
 // Links Table
 export const links = pgTable("links", {
-  url: varchar("url", { length: 255 }).primaryKey(),   // Primary key (URL of the link/page)
+  url: text("url").primaryKey(),   // Primary key (URL of the link/page)
   title: text("title").notNull(),                      // Title of the page
   description: text("description").notNull(),          // Description of the page
-  thumbnail: varchar("thumbnail", { length: 255 }).notNull() // Thumbnail image URL for the page
+  thumbnail: text("thumbnail").notNull() // Thumbnail image URL for the page
 });
 
 

@@ -1,5 +1,6 @@
 "use server"
 
+import { fetchMetadata } from "./fetchMetadata";
 import { Story } from "./types"
 
 // async function fetchHackerNewsTopStories(): Promise<Story[]> {
@@ -116,6 +117,7 @@ export async function fetchStories(feedUrls: string[]) {
       title: item.title,
       feedUrl: response.feed.url,
       feedTitle: response.feed.title,
+      description: item.description,
       url: item.link,
       published: item.pubDate,
       thumbnail: item.thumbnail,
@@ -138,4 +140,30 @@ export async function fetchStories(feedUrls: string[]) {
 export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | undefined> {
   const response = await fetchRSSFeed(feedUrl);
   return response?.feed;
+}
+
+export async function fetchFeedItems(feedUrl: string): Promise<Story[] | undefined> {
+  const response = await fetchRSSFeed(feedUrl);
+
+  const items = response?.items?.map(async (item) => {
+    const metadata = await fetchMetadata(item.link);
+    return {
+      feedUrl: response.feed.url,
+      feedTitle: response.feed.title,
+      thumbnail: metadata.thumbnail ?? '',
+      title: metadata.title,
+      description: metadata.description ?? '',
+      url: item.link,
+      published: item.pubDate,
+    };
+  }) ?? [];
+
+  try {
+    const stories = await Promise.all(items);
+    stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+    return stories;
+  } catch (error) {
+    console.error('Error fetching feed items with metadata:', error);
+    return [];
+  }
 }

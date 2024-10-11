@@ -1,6 +1,18 @@
 import { NextResponse } from 'next/server';
 
 /**
+
+You can
+- fetch a feed's info by URL
+- fetch a feed's items by URL (with pagination)
+
+The behaviour is that:
+- when a feed is fetched, it is saved to the database
+- when a feed's items are fetched, they are saved to the database
+
+*/
+
+/**
  * Devto, hacker news, youtube, RSS...
  */
 // interface Feed {
