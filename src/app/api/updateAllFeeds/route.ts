@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     .limit(4000);
 
   for (const { url } of allFeeds) {
-    await updateFeedItems(url);
+    updateFeedItems(url);
   }
 
   return NextResponse.json({});
