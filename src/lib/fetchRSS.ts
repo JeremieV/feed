@@ -109,34 +109,6 @@ export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
   }
 }
 
-export async function fetchStories(feedUrls: string[]) {
-  const fetchFeedPromises = feedUrls.map(async (feed) => {
-    const response = await fetchRSSFeed(feed);
-    return response?.items?.map((item) => ({
-      id: item.guid,
-      title: item.title,
-      feedUrl: response.feed.url,
-      feedTitle: response.feed.title,
-      description: item.description,
-      url: item.link,
-      published: item.pubDate,
-      thumbnail: item.thumbnail,
-    } as Story)) ?? [];
-  });
-
-  try {
-    const storiesArrays = await Promise.all(fetchFeedPromises);
-    const stories: Story[] = storiesArrays.flat();
-    stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
-
-    return stories;
-  } catch (error) {
-    console.error('Error fetching stories:', error);
-    return [];
-  }
-}
-
-
 export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | undefined> {
   const response = await fetchRSSFeed(feedUrl);
   return response?.feed;
@@ -147,20 +119,26 @@ export async function fetchFeedItems(feedUrl: string): Promise<Story[] | undefin
 
   const items = response?.items?.map(async (item) => {
     const metadata = await fetchMetadata(item.link);
+
+    if (!metadata.title) {
+      console.log(metadata);
+      console.log(item);
+    }
+
     return {
       feedUrl: response.feed.url,
       feedTitle: response.feed.title,
-      thumbnail: metadata.thumbnail ?? '',
-      title: metadata.title,
-      description: metadata.description ?? '',
+      thumbnail: metadata.thumbnail || item.thumbnail,
+      title: metadata.title || item.title,
+      description: metadata.description || item.description,
       url: item.link,
-      published: item.pubDate,
+      pubDate: item.pubDate,
     };
   }) ?? [];
 
   try {
     const stories = await Promise.all(items);
-    stories.sort((a, b) => new Date(b.published).getTime() - new Date(a.published).getTime());
+    stories.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
     return stories;
   } catch (error) {
     console.error('Error fetching feed items with metadata:', error);

@@ -1,8 +1,9 @@
+import { updateFeedItems } from '@/app/server/feedsCRUD';
 import { db, feeds } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
-  if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (process.env.NODE_ENV !== "development" && req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest) {
     .limit(4000);
 
   for (const { url } of allFeeds) {
-    fetch(`/api/updateFeed/${encodeURIComponent(url)}`);
+    await updateFeedItems(url);
   }
 
   return NextResponse.json({});

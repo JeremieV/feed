@@ -1,13 +1,13 @@
 "use client"
 
 import Stories from "../../Stories";
-import { fetchFeedMeta } from "@/lib/fetchRSS";
 import { faviconUrl } from "@/lib/helpers";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { subscriptionsAtom } from "@/lib/state";
 import { useAtom } from "jotai";
 import { useQuery } from "@tanstack/react-query";
+import { getFeedInfo } from "@/app/server/feedsCRUD";
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
   const [subscriptions, setSubscriptions] = useAtom(subscriptionsAtom)
@@ -15,7 +15,7 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
   const { isPending, error, data } = useQuery({
     queryKey: ['feed', decodeURIComponent(params.feed)],
     queryFn: async () => {
-      return await fetchFeedMeta(decodeURIComponent(params.feed))
+      return await getFeedInfo(decodeURIComponent(params.feed))
     }
   })
 

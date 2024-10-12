@@ -3,12 +3,12 @@
 import { Fragment, useEffect, useState } from "react";
 import GridView from "./GridView"
 import ListView from "./ListView"
-import { fetchStories } from '@/lib/fetchRSS'
 import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/state";
 import { useQuery } from "@tanstack/react-query";
+import { getItemsFromMultipleFeeds } from "./server/feedsCRUD";
 
 export default function Stories({ feeds }: { feeds: string[] }) {
   const [currentPage, setCurrentPage] = useState(1)
@@ -21,7 +21,7 @@ export default function Stories({ feeds }: { feeds: string[] }) {
   const { isPending, error, data: stories } = useQuery({
     queryKey: ['landing', feeds],
     queryFn: async () => {
-      return await fetchStories(feeds)
+      return await getItemsFromMultipleFeeds(feeds)
     },
   })
 
