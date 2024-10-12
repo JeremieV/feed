@@ -21,7 +21,7 @@ If people like this, it might very well become a more fully-featured app and lon
   - logo / favicon
   - metadata
 <!--  -->
-- display skeleton while loading in list view
+- display skeleton while loading instead of loading indicator (grid & list view)
 - let users create combined feeds
 - fix the tailwind css pattern which is over optimistic
 - choose a license (I am thinking about https://choosealicense.com/licenses/unlicense/)
@@ -30,7 +30,8 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Changelog (most recent first)
 
-- 2024-10-11 sidebar now grows to screen height on mobile
+- 2024-10-12 fix: topics only show on landing page
+- 2024-10-11 fix: sidebar now grows to screen height on mobile
 - 2024-10-11 feat: added database, endpoints to manage and update feeds
 - 2024-10-08 fix: reset page number to 1 when changing feeds
 - 2024-10-08 feat: added subscribe button
