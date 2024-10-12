@@ -1,6 +1,6 @@
 {
   "crons": [{
     "path": "/api/updateAllFeeds",
-    "schedule": "0 * * * *"
+    "schedule": "@hourly"
   }]
 }
