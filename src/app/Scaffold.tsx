@@ -4,11 +4,10 @@ import ControlBar from "./ControlBar"
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button"
 import { faviconUrl } from "@/lib/helpers";
-
-import { Input } from "@/components/ui/input";
-// import { displayUrl, urlToRSS } from "@/lib/helpers"
-import React, { useState, useRef } from 'react'
-import { Menu } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import React, { useState } from 'react'
+import { Menu, Search } from "lucide-react";
+import { urlToRSS } from "@/lib/helpers"
 import {
   Dialog,
   DialogBackdrop,
@@ -18,6 +17,78 @@ import Link from "next/link";
 import { useAtom } from "jotai";
 import { subscriptionsAtom } from "@/lib/state";
 import { useRouter } from "next/navigation";
+import { searchFeeds } from "./server/feedsCRUD";
+import { useQuery } from "@tanstack/react-query";
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+
+function SearchBar() {
+  const [open, setOpen] = React.useState(false)
+  React.useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault()
+        setOpen((open) => !open)
+      }
+    }
+    document.addEventListener("keydown", down)
+    return () => document.removeEventListener("keydown", down)
+  }, [])
+
+  const router = useRouter();
+  async function gotoFeedPage(url: string) {
+    setOpen(false)
+    router.push(`/feed/${encodeURIComponent(url)}`)
+  }
+
+  function isValidUrl(url: string) {
+    try { new URL(url) } catch { return false }
+    return true;
+  }
+
+  const [inputValue, setInputValue] = useState('')
+  const { isPending, data: suggestions } = useQuery({
+    queryKey: ['search', inputValue],
+    queryFn: async () => {
+      return await searchFeeds(inputValue)
+    },
+  })
+
+  const placeholder = "Search or paste URL (RSS, youtube, medium, substack, reddit)"
+  return (
+    <>
+      <div className="lg:hidden grow"></div>
+      <Button variant="outline" className="gap-2 md:w-full max-w-2xl justify-end md:justify-between mx-auto" onClick={() => setOpen(true)}>
+        <span className="sr-only md:not-sr-only min-w-80 text-left text-muted-foreground">Search</span>
+        <div className="grow hidden lg:block"></div>
+        <kbd className="hidden lg:inline-flex pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+          <span className="text-xs">⌘</span>K
+        </kbd>
+        <Separator orientation="vertical" className="hidden lg:block" />
+        <Search size={20} strokeWidth={1.2} className="md:mx-1" />
+      </Button>
+      {/* CommandDialog is giving a lot of trouble. Maybe use a select instead? */}
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandInput placeholder={placeholder} onInput={v => setInputValue(v?.currentTarget.value)} onKeyDown={async (e) => e.code === 'Enter' && isValidUrl(inputValue) && gotoFeedPage(await urlToRSS(inputValue))} />
+        <CommandList>
+          <CommandEmpty>{isPending ? 'Loading...' : 'No results found.'}</CommandEmpty>
+          {suggestions?.map(s =>
+            <CommandItem key={s.url} className="rounded-none hover:cursor-pointer" onSelect={() => gotoFeedPage(s.url)}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={faviconUrl(s.link)} alt="" className="aspect-square w-6 h-6 rounded-md mr-4" />
+              <span>{s.title}</span>
+            </CommandItem>
+          )}
+        </CommandList>
+      </CommandDialog>
+    </>
+  )
+}
 
 export default function Page({
   children,
@@ -26,28 +97,9 @@ export default function Page({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [subscriptions] = useAtom(subscriptionsAtom)
-  const router = useRouter();
-
-  async function gotoFeedPage() {
-    // navigate to `/feed/${encodeURIComponent(inputValue)}
-    if (inputValue.trim() !== "") {
-      const encodedUrl = encodeURIComponent(inputValue);
-      await router.push(`/feed/${encodedUrl}`);
-    }
-  }
-
-  const [inputValue, setInputValue] = useState('')
-  const inputRef = useRef<HTMLInputElement>(null)
-  const handleKeyDown = (e: { key: string; preventDefault: () => void }) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      // validate url
-      gotoFeedPage()
-    }
-  }
 
   const Logo = () => (
-    <div className="h-16 flex items-center">
+    <div className="h-16 flex items-center gap-2">
       <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
         <span className="sr-only">Open sidebar</span>
         <Menu />
@@ -102,15 +154,7 @@ export default function Page({
             <div className="lg:hidden">
               <Logo />
             </div>
-            <Input
-              type="text"
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Enter RSS feed url (or youtube, medium, substack, reddit...)"
-            />
-            <Button variant="secondary" onClick={() => gotoFeedPage()}>Search</Button>
+            <SearchBar />
           </div>
           <div className="pb-4 mb-1">
             <ControlBar />

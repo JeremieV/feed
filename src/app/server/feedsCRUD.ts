@@ -45,7 +45,6 @@ export async function getFeedInfo(url: string) {
   return feed;
 }
 
-
 /**
  * Fetch a feed's items by URL from the database.
  */
@@ -82,6 +81,26 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[]): Promise<Sto
     console.error('Error fetching stories:', error);
     return [];
   }
+}
+
+/**
+ * Get all feeds containing a search string. If query string is empty, return the top 100 feeds.
+ */
+export async function searchFeeds(query: string) {
+  if (!query) {
+    return db.select()
+      .from(feeds)
+      .orderBy(feeds.title)
+      .limit(100);
+  }
+
+  const results = await db.select()
+    .from(feeds)
+    .where(sql`title ILIKE ${`%${query}%`}`)
+    .orderBy(feeds.title)
+    .limit(100);
+
+  return results;
 }
 
 /**

@@ -8,7 +8,6 @@ If people like this, it might very well become a more fully-featured app and lon
 
 - review the youtube etc compatibility (and activitypub)
 - paginate API endpoint for feed items
-- implement the search function
 - add the created_at and updated_at for all database tables
 - curate "topics" better than the AI generated ones
 - import/export OPML
@@ -30,6 +29,7 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Changelog (most recent first)
 
+- 2024-10-12 feat: added feed search functionality
 - 2024-10-12 fix: topics only show on landing page
 - 2024-10-11 fix: sidebar now grows to screen height on mobile
 - 2024-10-11 feat: added database, endpoints to manage and update feeds
