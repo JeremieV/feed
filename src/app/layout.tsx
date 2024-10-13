@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Analytics } from "@vercel/analytics/react"
 import Scaffold from "./Scaffold";
+import { ClerkProvider } from '@clerk/nextjs'
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -27,22 +28,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="overscroll-none h-full">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none h-full`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning className="overscroll-none h-full">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none h-full`}
         >
-          <Scaffold>
-            {children}
-          </Scaffold>
-        </ThemeProvider>
-        <Analytics />
-      </body>
-    </html>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <Scaffold>
+              {children}
+            </Scaffold>
+          </ThemeProvider>
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

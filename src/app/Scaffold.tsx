@@ -30,6 +30,12 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
+import {
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton
+} from '@clerk/nextjs'
 
 function SearchBar() {
   const [open, setOpen] = React.useState(false)
@@ -161,6 +167,16 @@ export default function Page({
               <Logo />
             </div>
             <SearchBar />
+            <SignedOut>
+              <SignInButton>
+                <Button variant="outline">Sign in</Button>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton>
+                <Button>Sign out</Button>
+              </UserButton>
+            </SignedIn>
           </div>
           <div className="pb-4 mb-1">
             <ControlBar />

@@ -51,16 +51,27 @@ export async function fetchMetadata(url: string) {
     const description = $('meta[property="og:description"]').attr('content') || $('meta[name="description"]').attr('content');
     const thumbnail = $('meta[property="og:image"]').attr('content');
 
+    const datePublished = $('meta[property="article:published_time"]').attr('content') ||
+      $('meta[name="date"]').attr('content') ||
+      $('meta[itemprop="datePublished"]').attr('content');
+    const dateLastEdited = $('meta[property="article:modified_time"]').attr('content') ||
+      $('meta[name="last-modified"]').attr('content') ||
+      $('meta[itemprop="dateModified"]').attr('content');
+
     return {
-      title: title,
-      description: description,
-      thumbnail: thumbnail,
+      title,
+      description,
+      thumbnail,
+      datePublished,
+      dateLastEdited,
     };
   } catch (error) {
     return {
       title: '',
       description: undefined,
       thumbnail: undefined,
+      datePublished: undefined,
+      dateLastEdited: undefined,
     };;
   }
 }
