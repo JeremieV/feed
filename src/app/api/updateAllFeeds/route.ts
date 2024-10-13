@@ -2,6 +2,8 @@ import { updateFeedItems } from '@/app/server/feedsCRUD';
 import { db, feeds } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const maxDuration = 30; // seconds
+
 export async function GET(req: NextRequest) {
   if (process.env.NODE_ENV !== "development" && req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
     console.warn("Unauthorized request to update all feeds.");
@@ -16,7 +18,7 @@ export async function GET(req: NextRequest) {
     .limit(4000);
 
   for (const { url } of allFeeds) {
-    updateFeedItems(url);
+    await updateFeedItems(url);
   }
 
   return NextResponse.json({});
