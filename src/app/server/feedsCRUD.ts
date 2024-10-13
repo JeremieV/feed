@@ -110,6 +110,7 @@ export async function searchFeeds(query: string) {
  */
 export async function updateFeedItems(url: string) {
   const latest = await fetchFeedItems(url);
+  console.info(`Updating feed: ${url}`);
 
   if (!latest) {
     throw Error('Feed not found or invalid.');
