@@ -26,6 +26,10 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 
 function SearchBar() {
   const [open, setOpen] = React.useState(false)
@@ -129,8 +133,10 @@ export default function Page({
     </div>
   )
 
+  const [queryClient] = useState(() => new QueryClient())
+
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       {/* Mobile sidebar */}
       <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
         <DialogBackdrop transition className="fixed inset-0 bg-black/60 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
@@ -165,6 +171,6 @@ export default function Page({
           {children}
         </main>
       </div>
-    </>
+    </QueryClientProvider>
   )
 }
