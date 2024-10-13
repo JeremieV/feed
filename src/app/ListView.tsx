@@ -1,3 +1,4 @@
+import Upvote from "@/components/upvote";
 import { displayTimeAgo, displayUrl } from "@/lib/helpers";
 import { Story } from "@/lib/types";
 
@@ -10,6 +11,7 @@ export default function ListView({ currentStories }: { currentStories: Story[], 
           <div className='text-muted-foreground text-sm flex'>
             <a href={`/feed/${encodeURIComponent(story.feedUrl)}`} title={story.title} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a>
             <span className="mx-1">{`•`}</span><span>{displayTimeAgo(story.pubDate)}</span>
+            <span className="mx-1">{`•`}</span><Upvote upvoted={false} count={0} />
           </div>
         </div>
       ))}

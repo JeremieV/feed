@@ -4,6 +4,7 @@ import { displayTimeAgo, displayUrl, faviconUrl } from "@/lib/helpers"
 import { Story } from "@/lib/types"
 import Thumbnail from "./Thumbnail"
 import { TwitterTweetEmbed } from 'react-twitter-embed'
+import Upvote from "@/components/upvote"
 // import { Skeleton } from "@/components/ui/skeleton"
 
 export default function GridView({ currentStories }: { currentStories: Story[] }) {
@@ -77,8 +78,8 @@ function GridComponent({ story }: { story: Story }) {
         <div className="p-3 flex flex-col gap-1">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col gap-1">
-            <a href={`/feed/${encodeURIComponent(story.feedUrl)}`} title={story.feedUrl} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a>
-            <span>{displayTimeAgo(story.pubDate)}</span>
+            <div><a href={`/feed/${encodeURIComponent(story.feedUrl)}`} title={story.feedUrl} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a><span className="mx-1">{`•`}</span><span>{displayTimeAgo(story.pubDate)}</span></div>
+            <div><Upvote upvoted={false} count={0} /></div>
           </div>
         </div>
       </div>
