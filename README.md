@@ -29,6 +29,7 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Changelog (most recent first)
 
+- 2024-10-13 feat: added tweet previews
 - 2024-10-12 feat: added feed search functionality
 - 2024-10-12 fix: topics only show on landing page
 - 2024-10-11 fix: sidebar now grows to screen height on mobile

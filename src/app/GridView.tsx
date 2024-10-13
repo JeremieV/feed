@@ -3,6 +3,7 @@
 import { displayTimeAgo, displayUrl, faviconUrl } from "@/lib/helpers"
 import { Story } from "@/lib/types"
 import Thumbnail from "./Thumbnail"
+import { TwitterTweetEmbed } from 'react-twitter-embed'
 // import { Skeleton } from "@/components/ui/skeleton"
 
 export default function GridView({ currentStories }: { currentStories: Story[] }) {
@@ -20,6 +21,18 @@ function GridComponent({ story }: { story: Story }) {
   //   return <GridComponentSkeleton />
   // }
 
+  function isTweet(url: string) {
+    const regex = /status\/(\d+)$/;
+    const match = url.match(regex);
+    return match && (story.url.startsWith('https://twitter.com') || story.url.startsWith('https://x.com'))
+  }
+
+  function tweetId(url: string) {
+    const regex = /status\/(\d+)$/;
+    const match = url.match(regex)!;
+    return match[1]
+  }
+
   return (
     <a
       key={story.url}
@@ -30,15 +43,27 @@ function GridComponent({ story }: { story: Story }) {
       className="block rounded-md overflow-hidden"
     >
       <div className='aspect-video w-full overflow-hidden' title={story.description ?? ''}>
-        {story.thumbnail ?
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={story.thumbnail}
-            alt={story.title}
-            className="w-full h-full object-cover rounded-md text-left leading-tight line-clamp-3"
-          />
+        {isTweet(story.url) ?
+          (
+            <div className="aspect-video w-full overflow-scroll rounded-xl overscroll-none">
+              <div className="pointer-events-none">
+                <TwitterTweetEmbed
+                  onLoad={function noRefCheck() { }}
+                  tweetId={tweetId(story.url)}
+                />
+              </div>
+            </div>
+          )
           :
-          <Thumbnail title={story.title} />
+          story.thumbnail ?
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={story.thumbnail}
+              alt={story.title}
+              className="w-full h-full object-cover rounded-md text-left leading-tight line-clamp-3"
+            />
+            :
+            <Thumbnail title={story.title} />
         }
       </div>
       <div className="flex">
