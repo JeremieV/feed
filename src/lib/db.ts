@@ -19,6 +19,7 @@ export const feeds = pgTable("feeds", {
   link: text("link").notNull(),
   description: text("description").notNull(),
   image: text("image").notNull(),
+  itemsUpdatedAt: timestamp("items_updated_at").defaultNow(),
   ...timestamps,
 });
 
