@@ -37,7 +37,7 @@ export async function getFeedInfo(url: string) {
       })
       .execute();
 
-    await fetch(`/api/updateFeed/${encodeURIComponent(feed.url)}`);
+    await updateFeedItems(url);
   } else {
     feed = feed[0];
   }
