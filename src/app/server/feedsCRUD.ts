@@ -124,6 +124,8 @@ export async function updateFeedItems(url: string) {
         title: item.title,
         description: item.description,
         thumbnail: item.thumbnail,
+        datePublished: item.datePublished ? new Date(item.datePublished) : null,
+        dateLastEdited: item.dateLastEdited ? new Date(item.dateLastEdited) : null,
       })))
       .onConflictDoUpdate({
         target: links.url,
@@ -134,7 +136,9 @@ export async function updateFeedItems(url: string) {
     await tx.insert(feedItems)
       .values(latest.map((item) => ({
         feedUrl: url,
-        pubDate: item.pubDate,
+        title: item.title,
+        description: item.description,
+        pubDate: new Date(item.pubDate),
         linkUrl: item.url,
       })))
       // when is this ever going to happen? At the risk of a hard to detect bug

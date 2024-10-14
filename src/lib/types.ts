@@ -4,5 +4,5 @@ export interface Story {
   thumbnail: string
   description: string
   url: string
-  pubDate: string
+  pubDate: Date
 }

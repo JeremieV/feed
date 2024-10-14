@@ -4,47 +4,31 @@ import {
   pgTable,
   text,
   primaryKey,
-  date,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 
-/**
+// Base table mixin with created_at and updated_at
+export const timestamps = {
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow().$onUpdate(() => new Date()),
+};
 
-SCHEMA
-
-feeds
-- url (PK)
-- title
-- link
-- description
-- image
-
-feed_items
-- feed_url (FK)
-- pub_date (date)
-- page_url (FK)
-
-links
-- url (PK)
-- title
-- description
-- thumbnail
-
-*/
-
-// Feeds Table
 export const feeds = pgTable("feeds", {
-  url: text("url").primaryKey(),   // Primary key (URL of the feed)
-  title: text("title").notNull(),                      // Title of the feed
-  link: text("link").notNull(),    // Link to the feed's homepage
-  description: text("description").notNull(),          // Description of the feed
-  image: text("image").notNull()   // Image URL for the feed
+  url: text("url").primaryKey(),
+  title: text("title").notNull(),
+  link: text("link").notNull(),
+  description: text("description").notNull(),
+  image: text("image").notNull(),
+  ...timestamps,
 });
 
-// Feed Items Table
 export const feedItems = pgTable("feed_items", {
-  feedUrl: text("feed_url").notNull().references(() => feeds.url),   // Foreign key referencing 'feeds.url'
-  pubDate: date("pub_date").notNull(),                      // Publication date of the item
-  linkUrl: text("link_url").notNull().references(() => links.url),   // Foreign key referencing 'links.url'
+  feedUrl: text("feed_url").notNull().references(() => feeds.url),
+  title: text("title").notNull().default(""),
+  description: text("description").notNull().default(""),
+  pubDate: timestamp("pub_date").notNull(),
+  linkUrl: text("link_url").notNull().references(() => links.url),
+  ...timestamps,
 },
   (table) => {
     return {
@@ -53,13 +37,14 @@ export const feedItems = pgTable("feed_items", {
   }
 );
 
-// Links Table
 export const links = pgTable("links", {
-  url: text("url").primaryKey(),   // Primary key (URL of the link/page)
-  title: text("title").notNull(),                      // Title of the page
-  description: text("description").notNull(),          // Description of the page
-  thumbnail: text("thumbnail").notNull() // Thumbnail image URL for the page
+  url: text("url").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  thumbnail: text("thumbnail").notNull(),
+  datePublished: timestamp("date_published"),
+  dateLastEdited: timestamp("date_last_edited"),
+  ...timestamps,
 });
-
 
 export const db = drizzle(sql)

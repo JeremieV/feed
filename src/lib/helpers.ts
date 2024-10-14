@@ -12,8 +12,8 @@ export function faviconUrl(url: string): string {
   }
 }
 
-export function displayTimeAgo(dateStr: string): string {
-  const inputDate = new Date(dateStr);
+export function displayTimeAgo(date: string | Date): string {
+  const inputDate = new Date(date);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - inputDate.getTime()) / 1000);
 

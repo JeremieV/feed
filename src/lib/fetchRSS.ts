@@ -1,7 +1,6 @@
 "use server"
 
 import { fetchMetadata } from "./fetchMetadata";
-import { Story } from "./types"
 
 // async function fetchHackerNewsTopStories(): Promise<Story[]> {
 //   const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
@@ -114,7 +113,7 @@ export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | unde
   return response?.feed;
 }
 
-export async function fetchFeedItems(feedUrl: string): Promise<Story[] | undefined> {
+export async function fetchFeedItems(feedUrl: string) {
   const response = await fetchRSSFeed(feedUrl);
 
   const items = response?.items?.map(async (item) => {
@@ -133,6 +132,8 @@ export async function fetchFeedItems(feedUrl: string): Promise<Story[] | undefin
       description: metadata.description || item.description,
       url: item.link,
       pubDate: item.pubDate,
+      datePublished: metadata.datePublished,
+      dateLastEdited: metadata.dateLastEdited,
     };
   }) ?? [];
 
