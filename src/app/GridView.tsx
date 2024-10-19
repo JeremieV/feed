@@ -43,16 +43,14 @@ function GridComponent({ story }: { story: Story }) {
       rel="noopener noreferrer"
       className="block rounded-md overflow-hidden"
     >
-      <div className='aspect-video w-full overflow-hidden' title={story.description ?? ''}>
+      <div className='aspect-video w-full overflow-hidden pointer-events-none' title={story.description ?? ''}>
         {isTweet(story.url) ?
           (
             <div className="aspect-video w-full overflow-scroll rounded-xl overscroll-none">
-              <div className="pointer-events-none">
-                <TwitterTweetEmbed
-                  onLoad={function noRefCheck() { }}
-                  tweetId={tweetId(story.url)}
-                />
-              </div>
+              <TwitterTweetEmbed
+                onLoad={function noRefCheck() { }}
+                tweetId={tweetId(story.url)}
+              />
             </div>
           )
           :

@@ -126,7 +126,7 @@ export default function Page({
     <div className="h-screen overflow-hidden sticky top-0 bg-card border-r">
       <div className="h-svh flex flex-col overflow-y-scroll px-4">
         <Logo />
-        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+        <Link onClick={() => setSidebarOpen(false)} href={"/"} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
           <House strokeWidth={1.3} className="w-6 h-6" />
           <span>Home</span>
         </Link>

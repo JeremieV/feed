@@ -2,7 +2,7 @@ import Upvote from "@/components/upvote";
 import { displayTimeAgo, displayUrl } from "@/lib/helpers";
 import { Story } from "@/lib/types";
 
-export default function ListView({ currentStories }: { currentStories: Story[], currentPage: number }) {
+export default function ListView({ currentStories }: { currentStories: Story[] }) {
   return (
     <div className="overflow-hidden mb-4">
       {currentStories.map((story) => (

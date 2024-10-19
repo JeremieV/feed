@@ -1,33 +1,43 @@
 "use client"
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import GridView from "./GridView"
 import ListView from "./ListView"
-import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/state";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { getItemsFromMultipleFeeds } from "./server/feedsCRUD";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getItemsFromMultipleFeeds, getRecommendedStories } from "./server/feedsCRUD";
 import { Button } from "@/components/ui/button";
 
 export default function Stories({ feeds }: { feeds: string[] }) {
-  const [currentPage, setCurrentPage] = useState(1)
   const [view] = useAtom(viewAtom)
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [feeds])
-
-  const { isPending, error, data: stories } = useQuery({
-    queryKey: ['landing', feeds, currentPage],
-    queryFn: async () => {
-      return await getItemsFromMultipleFeeds(feeds, currentPage)
+  const {
+    data: stories,
+    isPending,
+    error,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useInfiniteQuery({
+    queryKey: ['landing', feeds],
+    queryFn: async ({ pageParam }) => {
+      if (feeds.length === 0) {
+        return await getRecommendedStories()
+      }
+      return await getItemsFromMultipleFeeds(feeds, pageParam)
     },
-    placeholderData: keepPreviousData
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      if (lastPage.length === 0) return undefined
+      return lastPageParam + 1
+    },
   })
 
-  if (isPending) {
+  if (isPending && !isFetchingNextPage) {
     return <LoadingIndicator />
   }
 
@@ -35,18 +45,14 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     return <div>Error: {error.name} {error.message}</div>
   }
 
-  const storiesPerPage = 60
-  const indexOfLastStory = currentPage * storiesPerPage
-  const indexOfFirstStory = indexOfLastStory - storiesPerPage
-  const currentStories = stories.items.slice(indexOfFirstStory, indexOfLastStory)
-  const totalPages = Math.ceil(stories.totalItems / storiesPerPage)
+  const currentStories = stories?.pages.flatMap(page => page) || []
 
-  if (feeds.length === 0) {
+  if (feeds.length === 0 && !showSuggestions) {
     return (
       <div className="w-full text-center py-4 grow flex flex-col justify-center">
         <div>
           <p className="text-muted-foreground mb-4">Welcome to the open feed reader!</p>
-          <Button variant="outline">Show home page suggestions</Button>
+          <Button variant="outline" onClick={() => setShowSuggestions(true)}>Show home page suggestions</Button>
         </div>
       </div>
     )
@@ -57,9 +63,19 @@ export default function Stories({ feeds }: { feeds: string[] }) {
       {view === 'grid' ? (
         <GridView currentStories={currentStories} />
       ) : (
-        <ListView currentStories={currentStories} currentPage={currentPage} />
+        <ListView currentStories={currentStories} />
       )}
-      <BottomBar currentPage={currentPage} totalPages={totalPages} paginate={setCurrentPage} />
+      {hasNextPage &&
+        <div className="flex justify-center">
+          <Button
+            onClick={() => !isFetching && fetchNextPage()}
+            disabled={isFetching}
+            variant="outline"
+          >
+            More stories
+          </Button>
+        </div>
+      }
     </Fragment>
   )
 }

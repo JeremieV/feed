@@ -65,6 +65,31 @@ export async function getFeedItems(url: string) {
   return items;
 }
 
+export async function getRecommendedStories() {
+  // ideal mix (percentages to be determined):
+  // random
+  // top stories
+  // new stories
+  // subscriptions stories
+  // old classics
+  // "for you" stories
+
+  const items = await db.select({
+    feedUrl: feedItems.feedUrl,
+    pubDate: feedItems.pubDate,
+    url: links.url,
+    title: links.title,
+    description: links.description,
+    thumbnail: links.thumbnail,
+  })
+    .from(feedItems)
+    .innerJoin(links, eq(feedItems.linkUrl, links.url))  // Join with 'links' table on page URL
+    .orderBy(sql`RANDOM()`)
+    .limit(60)
+
+  return items;
+}
+
 export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number) {
   const itemsPerPage = 60; // 60 items per page
   const offset = (page - 1) * itemsPerPage;
@@ -81,17 +106,10 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number
     .innerJoin(links, eq(feedItems.linkUrl, links.url))
     .where(inArray(feedItems.feedUrl, feedUrls))
     .orderBy(desc(feedItems.pubDate))
-    // .offset(offset)
-    // .limit(itemsPerPage)
+    .offset(offset)
+    .limit(itemsPerPage)
 
-  const totalItems = await db
-    .select({ count: sql<number>`COUNT(*)` })
-    .from(feedItems)
-    // .innerJoin(links, eq(feedItems.linkUrl, links.url))
-    .where(inArray(feedItems.feedUrl, feedUrls))
-    .execute();
-
-  return { items, totalItems: totalItems[0].count };
+  return items;
 }
 
 /**
