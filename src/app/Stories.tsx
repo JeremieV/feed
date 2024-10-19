@@ -7,8 +7,9 @@ import BottomBar from "./BottomBar"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/state";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { getItemsFromMultipleFeeds } from "./server/feedsCRUD";
+import { Button } from "@/components/ui/button";
 
 export default function Stories({ feeds }: { feeds: string[] }) {
   const [currentPage, setCurrentPage] = useState(1)
@@ -19,10 +20,11 @@ export default function Stories({ feeds }: { feeds: string[] }) {
   }, [feeds])
 
   const { isPending, error, data: stories } = useQuery({
-    queryKey: ['landing', feeds],
+    queryKey: ['landing', feeds, currentPage],
     queryFn: async () => {
-      return await getItemsFromMultipleFeeds(feeds)
+      return await getItemsFromMultipleFeeds(feeds, currentPage)
     },
+    placeholderData: keepPreviousData
   })
 
   if (isPending) {
@@ -36,14 +38,16 @@ export default function Stories({ feeds }: { feeds: string[] }) {
   const storiesPerPage = 60
   const indexOfLastStory = currentPage * storiesPerPage
   const indexOfFirstStory = indexOfLastStory - storiesPerPage
-  const currentStories = stories.slice(indexOfFirstStory, indexOfLastStory)
-  const totalPages = Math.ceil(stories.length / storiesPerPage)
+  const currentStories = stories.items.slice(indexOfFirstStory, indexOfLastStory)
+  const totalPages = Math.ceil(stories.totalItems / storiesPerPage)
 
   if (feeds.length === 0) {
     return (
       <div className="w-full text-center py-4 grow flex flex-col justify-center">
-        <p className="text-muted-foreground">Welcome to the open feed reader!</p>
-        <p className="text-muted-foreground">Add some feeds to get started (top left)</p>
+        <div>
+          <p className="text-muted-foreground mb-4">Welcome to the open feed reader!</p>
+          <Button variant="outline">Show home page suggestions</Button>
+        </div>
       </div>
     )
   }

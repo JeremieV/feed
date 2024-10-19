@@ -7,6 +7,7 @@ If people like this, it might very well become a more fully-featured app and lon
 ## Roadmap 
 
 - review the youtube etc compatibility (and activitypub)
+- recommendation algo (eg 50% most upvoted, 30% following, 20% random (to start))
 - paginate API endpoint for feed items
 - add the created_at and updated_at for all database tables
 - curate "topics" better than the AI generated ones

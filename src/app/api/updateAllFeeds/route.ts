@@ -1,6 +1,5 @@
 import { updateFeedItems } from '@/app/server/feedsCRUD';
 import { db, feeds } from '@/lib/db';
-import { eq } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 export const maxDuration = 30; // seconds
@@ -25,11 +24,6 @@ export async function GET(req: NextRequest) {
 
   console.info(`Updating feed: ${mostOutdated[0].url}`);
   await updateFeedItems(mostOutdated[0].url);
-
-  await db.update(feeds)
-    .set({ itemsUpdatedAt: new Date() })
-    .where(eq(feeds.url, mostOutdated[0].url))
-    .execute();
 
   // select all feeds from the database
   // const allFeeds = await db.select({ url: feeds.url })

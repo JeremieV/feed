@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { faviconUrl } from "@/lib/helpers";
 import { Separator } from "@/components/ui/separator";
 import React, { useState } from 'react'
-import { Menu, Search } from "lucide-react";
+import { CircleFadingArrowUp, History, House, Menu, Rss, Search, SquareUserRound } from "lucide-react";
 import { urlToRSS } from "@/lib/helpers"
 import {
   Dialog,
@@ -36,6 +36,7 @@ import {
   SignedOut,
   UserButton
 } from '@clerk/nextjs'
+import { Provider } from 'jotai'
 
 function SearchBar() {
   const [open, setOpen] = React.useState(false)
@@ -107,12 +108,13 @@ export default function Page({
 }>) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [subscriptions] = useAtom(subscriptionsAtom)
+  // const [frontPageTopic, setFrontPageTopic] = useAtom(frontPageTopicAtom)
 
   const Logo = () => (
     <div className="h-16 flex items-center gap-2">
       <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden">
         <span className="sr-only">Open sidebar</span>
-        <Menu />
+        <Menu strokeWidth={1.5} />
       </Button>
       <div>
         <h1 className="text-xl font-bold"><Link href="/">OpenFeed</Link></h1>
@@ -124,9 +126,42 @@ export default function Page({
     <div className="h-screen overflow-hidden sticky top-0 bg-card border-r">
       <div className="h-svh flex flex-col overflow-y-scroll px-4">
         <Logo />
-        <p className='p-8 mb-4 text-sm text-center bg-muted rounded-md text-muted-foreground'>
-          <a href="https://github.com/jeremiev/feed" className='underline'>Open source</a>, made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a>
-        </p>
+        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+          <House strokeWidth={1.3} className="w-6 h-6" />
+          <span>Home</span>
+        </Link>
+        <Link onClick={() => setSidebarOpen(false)} href={"/subscriptions"} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+          <Rss strokeWidth={1.3} className="w-6 h-6" />
+          <span>Subscriptions</span>
+        </Link>
+        <Separator className="my-4"></Separator>
+        <h2 className="font-semibold mb-2">Your account</h2>
+        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+          <SquareUserRound strokeWidth={1.3} className="w-6 h-6" />
+          <span>Your profile</span>
+        </Link>
+        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+          <History strokeWidth={1.3} className="w-6 h-6" />
+          <span>History</span>
+        </Link>
+        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+          <CircleFadingArrowUp strokeWidth={1.3} className="w-6 h-6" />
+          <span>Upvotes</span>
+        </Link>
+        {/* <h2 className="font-semibold mb-2">Your topics</h2>
+        <div className="flex flex-wrap gap-2 mr-2">
+          {Object.getOwnPropertyNames(topics).map(topic => (
+            <Button
+              key={topic}
+              title={topic}
+              variant={topic === frontPageTopic ? "default" : "secondary"}
+              onClick={() => topic === frontPageTopic ? setFrontPageTopic(undefined) : setFrontPageTopic(topic)}
+            >
+              {topic}
+            </Button>
+          ))}
+        </div> */}
+        <Separator className="my-4"></Separator>
         <h2 className="font-semibold mb-2">Subscriptions</h2>
         {subscriptions.map(s => (
           <Link onClick={() => setSidebarOpen(false)} href={`/feed/${encodeURIComponent(s.url)}`} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`} key={s.url}>
@@ -135,6 +170,10 @@ export default function Page({
             <span>{s.name}</span>
           </Link>
         ))}
+        <div className="p-6 my-4 space-y-4 text-sm text-left bg-muted rounded-md text-muted-foreground">
+          <p>Feeds are our windows on the world, so we need one that is <a href="https://github.com/jeremiev/feed" className='underline'>open source</a> and democratically governed.</p>
+          <p>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
+        </div>
       </div>
     </div>
   )
@@ -143,50 +182,52 @@ export default function Page({
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Mobile sidebar */}
-      <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
-        <DialogBackdrop transition className="fixed inset-0 bg-black/60 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
-        <div className="fixed inset-0 flex">
-          <DialogPanel transition className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full">
-            <SideBar />
-          </DialogPanel>
+      <Provider>
+        {/* Mobile sidebar */}
+        <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
+          <DialogBackdrop transition className="fixed inset-0 bg-black/60 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
+          <div className="fixed inset-0 flex">
+            <DialogPanel transition className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full">
+              <SideBar />
+            </DialogPanel>
+          </div>
+        </Dialog>
+
+        {/* Desktop sidebar */}
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+          <SideBar />
         </div>
-      </Dialog>
 
-      {/* Desktop sidebar */}
-      <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
-        <SideBar />
-      </div>
-
-      {/* Main content area */}
-      <div className="lg:pl-72 min-h-screen [&>*]:max-w-6xl [&>*]:mx-auto">
-        {/* header */}
-        <div className="sticky top-0 z-40 bg-card px-4">
-          <div className="flex h-16 shrink-0 items-center gap-x-2">
-            <div className="lg:hidden">
-              <Logo />
+        {/* Main content area */}
+        <div className="lg:pl-72 min-h-svh [&>*]:max-w-6xl [&>*]:mx-auto">
+          {/* header */}
+          <div className="sticky top-0 z-40 bg-card px-4">
+            <div className="flex h-16 shrink-0 items-center gap-x-2">
+              <div className="lg:hidden">
+                <Logo />
+              </div>
+              <SearchBar />
+              <SignedOut>
+                <SignInButton>
+                  <Button variant="outline">Sign in</Button>
+                </SignInButton>
+              </SignedOut>
+              <SignedIn>
+                <UserButton>
+                  <Button>Sign out</Button>
+                </UserButton>
+              </SignedIn>
             </div>
-            <SearchBar />
-            <SignedOut>
-              <SignInButton>
-                <Button variant="outline">Sign in</Button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <UserButton>
-                <Button>Sign out</Button>
-              </UserButton>
-            </SignedIn>
+            <div className="pb-4 mb-1">
+              <ControlBar />
+            </div>
           </div>
-          <div className="pb-4 mb-1">
-            <ControlBar />
-          </div>
-        </div>
 
-        <main className="flex flex-col pb-4 px-4 grow" id='top'>
-          {children}
-        </main>
-      </div>
+          <main className="flex flex-col pb-4 px-4" id='top'>
+            {children}
+          </main>
+        </div>
+      </Provider>
     </QueryClientProvider>
   )
 }

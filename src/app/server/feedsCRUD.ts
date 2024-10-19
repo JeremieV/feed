@@ -1,10 +1,9 @@
 "use server"
 
 import { db, feeds, feedItems, links } from '@/lib/db';
-import { eq, desc } from 'drizzle-orm';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import { fetchFeedItems, fetchFeedMeta } from '@/lib/fetchRSS';
-import { Story } from '@/lib/types';
 
 /**
  * Fetch a feed's info by URL.
@@ -21,6 +20,8 @@ export async function getFeedInfo(url: string) {
     .where(eq(feeds.url, url))
     .limit(1);  // Get one feed (since URL is unique)
 
+  await updateFeedItems(url);
+
   if (feed.length === 0) {
     feed = await fetchFeedMeta(url);
     if (!feed) {
@@ -36,8 +37,6 @@ export async function getFeedInfo(url: string) {
         image: feed.image,
       })
       .execute();
-
-    await updateFeedItems(url);
   } else {
     feed = feed[0];
   }
@@ -66,21 +65,33 @@ export async function getFeedItems(url: string) {
   return items;
 }
 
-export async function getItemsFromMultipleFeeds(feedUrls: string[]): Promise<Story[]> {
-  const fetchFeedPromises = feedUrls.map(async (feed) => {
-    return await getFeedItems(feed);
-  });
+export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number) {
+  const itemsPerPage = 60; // 60 items per page
+  const offset = (page - 1) * itemsPerPage;
 
-  try {
-    const storiesArrays = await Promise.all(fetchFeedPromises);
-    const stories = storiesArrays.flat();
-    stories.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+  const items = await db.select({
+    feedUrl: feedItems.feedUrl,
+    pubDate: feedItems.pubDate,
+    url: links.url,
+    title: links.title,
+    description: links.description,
+    thumbnail: links.thumbnail,
+  })
+    .from(feedItems)
+    .innerJoin(links, eq(feedItems.linkUrl, links.url))
+    .where(inArray(feedItems.feedUrl, feedUrls))
+    .orderBy(desc(feedItems.pubDate))
+    // .offset(offset)
+    // .limit(itemsPerPage)
 
-    return stories;
-  } catch (error) {
-    console.error('Error fetching stories:', error);
-    return [];
-  }
+  const totalItems = await db
+    .select({ count: sql<number>`COUNT(*)` })
+    .from(feedItems)
+    // .innerJoin(links, eq(feedItems.linkUrl, links.url))
+    .where(inArray(feedItems.feedUrl, feedUrls))
+    .execute();
+
+  return { items, totalItems: totalItems[0].count };
 }
 
 /**
@@ -112,8 +123,9 @@ export async function updateFeedItems(url: string) {
   const latest = await fetchFeedItems(url);
   console.info(`Updating feed: ${url}`);
 
-  if (!latest) {
-    throw Error('Feed not found or invalid.');
+  if (!latest || latest.length === 0) {
+    return
+    // Error('Feed not found or invalid.');
   }
 
   // insert the latest items into the database
@@ -148,5 +160,11 @@ export async function updateFeedItems(url: string) {
       // })
       .onConflictDoNothing()
       .execute();
+
+    await db.update(feeds)
+      .set({ itemsUpdatedAt: sql`NOW()` })
+      .where(eq(feeds.url, url))
+      .execute();
   })
+
 }

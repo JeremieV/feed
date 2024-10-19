@@ -19,8 +19,6 @@ export const subscriptionsAtom = atomWithStorage<{ name: string, url: string }[]
 
 export const topics = {
   // popular: [],
-  subscriptions: [],
-  // recommended: [],
   world: [
     "https://feeds.bbci.co.uk/news/world/rss.xml",
     "https://www.npr.org/rss/rss.php",
