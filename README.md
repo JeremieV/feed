@@ -7,10 +7,9 @@ If people like this, it might very well become a more fully-featured app and lon
 ## Roadmap 
 
 - review the youtube etc compatibility (and activitypub)
+- redo the search bar
+- implement upvotes, user profiles (name image description), and history
 - recommendation algo (eg 50% most upvoted, 30% following, 20% random (to start))
-- paginate API endpoint for feed items
-- add the created_at and updated_at for all database tables
-- curate "topics" better than the AI generated ones
 - import/export OPML
 <!--  -->
 - get the first 3 users
@@ -21,6 +20,7 @@ If people like this, it might very well become a more fully-featured app and lon
   - logo / favicon
   - metadata
 <!--  -->
+- curate "topics" better than the AI generated ones
 - display skeleton while loading instead of loading indicator (grid & list view)
 - let users create combined feeds
 - fix the tailwind css pattern which is over optimistic
@@ -30,7 +30,10 @@ If people like this, it might very well become a more fully-featured app and lon
 
 ## Changelog (most recent first)
 
+- 2024-10-19 feat: paginated feed items
+- 2024-10-19 feat: many UI changes and prototyped certain features
 - 2024-10-13 feat: added tweet previews
+- add the created_at and updated_at for all database tables
 - 2024-10-12 feat: added feed search functionality
 - 2024-10-12 fix: topics only show on landing page
 - 2024-10-11 fix: sidebar now grows to screen height on mobile

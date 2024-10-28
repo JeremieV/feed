@@ -6,7 +6,7 @@ import { buttonVariants } from "@/components/ui/button"
 import { faviconUrl } from "@/lib/helpers";
 import { Separator } from "@/components/ui/separator";
 import React, { useState } from 'react'
-import { CircleFadingArrowUp, History, House, Menu, Rss, Search, SquareUserRound } from "lucide-react";
+import { CircleFadingArrowUp, House, Menu, Rss, Search, SquareUserRound } from "lucide-react";
 import { urlToRSS } from "@/lib/helpers"
 import {
   Dialog,
@@ -136,14 +136,14 @@ export default function Page({
         </Link>
         <Separator className="my-4"></Separator>
         <h2 className="font-semibold mb-2">Your account</h2>
-        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+        <Link onClick={() => setSidebarOpen(false)} href="/profile" className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
           <SquareUserRound strokeWidth={1.3} className="w-6 h-6" />
           <span>Your profile</span>
         </Link>
-        <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
+        {/* <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
           <History strokeWidth={1.3} className="w-6 h-6" />
           <span>History</span>
-        </Link>
+        </Link> */}
         <Link onClick={() => setSidebarOpen(false)} href={""} className={`${buttonVariants({ variant: "ghost" })} !justify-start gap-4 overflow-hidden`}>
           <CircleFadingArrowUp strokeWidth={1.3} className="w-6 h-6" />
           <span>Upvotes</span>

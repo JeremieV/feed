@@ -7,7 +7,8 @@ import { Button } from "@/components/ui/button";
 import { subscriptionsAtom } from "@/lib/state";
 import { useAtom } from "jotai";
 import { useQuery } from "@tanstack/react-query";
-import { getFeedInfo, updateFeedItems } from "@/app/server/feedsCRUD";
+import { getFeedInfo } from "@/app/server/feedsCRUD";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
   const [subscriptions, setSubscriptions] = useAtom(subscriptionsAtom)
@@ -15,13 +16,13 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
   const { isPending, error, data } = useQuery({
     queryKey: ['feed', decodeURIComponent(params.feed)],
     queryFn: async () => {
-      updateFeedItems(decodeURIComponent(params.feed))
+      console.log("starting to load")
       return await getFeedInfo(decodeURIComponent(params.feed))
     }
   })
 
   if (isPending) {
-    return <div></div>
+    return <LoadingIndicator />
   }
 
   if (error) {

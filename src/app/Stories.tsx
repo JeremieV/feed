@@ -23,7 +23,7 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['landing', feeds],
+    queryKey: ['stories', feeds],
     queryFn: async ({ pageParam }) => {
       if (feeds.length === 0) {
         return await getRecommendedStories()

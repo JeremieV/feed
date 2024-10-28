@@ -5,6 +5,7 @@ import {
   text,
   primaryKey,
   timestamp,
+  uuid,
 } from 'drizzle-orm/pg-core';
 
 // Base table mixin with created_at and updated_at
@@ -47,5 +48,33 @@ export const links = pgTable("links", {
   dateLastEdited: timestamp("date_last_edited"),
   ...timestamps,
 });
+
+export const users = pgTable("users", {
+  id: text("id").primaryKey(),
+  username: text("username").notNull(),
+  description: text("description").notNull(),
+  avatar: text("avatar").notNull(),
+  ...timestamps,
+});
+
+export const upvotes = pgTable("upvotes", {
+  userId: text("user_id").notNull().references(() => users.id),
+  linkUrl: text("link_url").notNull().references(() => links.url),
+  timestamp: timestamp("timestamp").defaultNow(),
+},
+  (table) => {
+    return {
+      pk: primaryKey({ columns: [table.userId, table.linkUrl] }),
+    };
+  }
+);
+
+export const subscriptions = pgTable('subscriptions', {
+  id: uuid('id').primaryKey(),
+  followerId: text("user_id").notNull().references(() => users.id),
+  feedUrl: text("feed_url").references(() => feeds.url),
+  broadcasterId: text("broadcaster_id").references(() => users.id),
+  timestamp: timestamp("timestamp").defaultNow(),
+})
 
 export const db = drizzle(sql)

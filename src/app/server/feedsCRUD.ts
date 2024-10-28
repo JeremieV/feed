@@ -18,11 +18,10 @@ export async function getFeedInfo(url: string) {
   feed = await db.select()
     .from(feeds)
     .where(eq(feeds.url, url))
-    .limit(1);  // Get one feed (since URL is unique)
-
-  await updateFeedItems(url);
+    .limit(1);
 
   if (feed.length === 0) {
+    console.log('adding new feed')
     feed = await fetchFeedMeta(url);
     if (!feed) {
       throw Error('Feed not found or invalid.');
@@ -98,7 +97,7 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number
     feedUrl: feedItems.feedUrl,
     pubDate: feedItems.pubDate,
     url: links.url,
-    title: links.title,
+    title: feedItems.title,
     description: links.description,
     thumbnail: links.thumbnail,
   })
