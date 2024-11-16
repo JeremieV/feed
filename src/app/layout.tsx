@@ -30,6 +30,9 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" suppressHydrationWarning className="overscroll-none h-full">
+        <head>
+          <link rel="manifest" href="/manifest.json" />
+        </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-none h-full`}
         >
