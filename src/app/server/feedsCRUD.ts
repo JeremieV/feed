@@ -3,7 +3,7 @@
 import { db, feeds, feedItems, links } from '@/lib/db';
 import { eq, desc, inArray } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
-import { fetchFeedItems, fetchFeedMeta } from '@/lib/fetchRSS';
+import { fetchFeedItems, fetchRSSFeed } from '@/lib/fetchRSS';
 
 /**
  * Fetch a feed's info by URL.
@@ -12,35 +12,34 @@ import { fetchFeedItems, fetchFeedMeta } from '@/lib/fetchRSS';
  * @throws Error if the feed is not found or invalid.
  */
 export async function getFeedInfo(url: string) {
-  let feed;
-
-  // fetch from the database
-  feed = await db.select()
+  const feed = await db.select()
     .from(feeds)
     .where(eq(feeds.url, url))
     .limit(1);
 
   if (feed.length === 0) {
-    console.log('adding new feed')
-    feed = await fetchFeedMeta(url);
-    if (!feed) {
-      throw Error('Feed not found or invalid.');
-    }
-    // insert the result into the database
-    await db.insert(feeds)
-      .values({
-        url: feed.url,
-        title: feed.title,
-        link: feed.link,
-        description: feed.description,
-        image: feed.image,
-      })
-      .execute();
-  } else {
-    feed = feed[0];
+    return createFeed(url);
   }
 
-  return feed;
+  return feed[0];
+}
+
+export async function createFeed(url: string) {
+  console.log('adding new feed')
+  const feed = await fetchRSSFeed(url);
+  if (!feed) {
+    throw Error('Feed not found or invalid.');
+  }
+  // insert the result into the database
+  await db.insert(feeds)
+    .values({
+      url,
+      title: feed.title,
+      link: feed.link,
+      description: feed.description,
+      image: undefined,
+    })
+    .execute();
 }
 
 /**
@@ -149,7 +148,7 @@ export async function updateFeedItems(url: string) {
   await db.transaction(async (tx) => {
     await tx.insert(links)
       .values(latest.map((item) => ({
-        url: item.url,
+        url: item.url ?? url,
         title: item.title,
         description: item.description,
         thumbnail: item.thumbnail,
@@ -167,7 +166,7 @@ export async function updateFeedItems(url: string) {
         feedUrl: url,
         title: item.title,
         description: item.description,
-        pubDate: new Date(item.pubDate),
+        pubDate: item.pubDate ? new Date(item.pubDate) : undefined,
         linkUrl: item.url,
       })))
       // when is this ever going to happen? At the risk of a hard to detect bug

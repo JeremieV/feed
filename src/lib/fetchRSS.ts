@@ -1,6 +1,7 @@
 "use server"
 
 import { fetchMetadata } from "./fetchMetadata";
+import { extract, FeedData } from '@extractus/feed-extractor'
 
 // async function fetchHackerNewsTopStories(): Promise<Story[]> {
 //   const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
@@ -67,57 +68,62 @@ export async function youtubeToRSS(youtubeUrl: string): Promise<string | null> {
   return null; // Return null if the channel isn't found
 }
 
-export interface RSSFeed {
-  status: string
-  feed: RSSFeedMeta
-  items: RSSItem[]
+// export interface RSSFeed {
+//   status: string
+//   feed: RSSFeedMeta
+//   items: RSSItem[]
+// }
+
+// export interface RSSFeedMeta {
+//   url: string
+//   title: string
+//   link: string
+//   author: string
+//   description: string
+//   image: string
+// }
+
+// export interface RSSItem {
+//   title: string
+//   pubDate: string
+//   link: string
+//   guid: string
+//   author: string
+//   thumbnail: string
+//   description: string
+//   content: string
+// }
+
+// export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
+//   try {
+//     const response = await fetch(
+//       `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=100&api_key=${process.env.RSS2JSON_API_KEY}`,
+//       { next: { revalidate: 60 * 60 } } // cache for one hour
+//     )
+//     const data: RSSFeed = await response.json()
+
+//     return data;
+//   } catch (error) {
+//     console.error('Error fetching rss:', error);
+//     return null;
+//   }
+// }
+
+export async function fetchRSSFeed(url: string): Promise<FeedData | null> {
+  return await extract(url, undefined, { signal: AbortSignal.timeout(5000) });
 }
 
-export interface RSSFeedMeta {
-  url: string
-  title: string
-  link: string
-  author: string
-  description: string
-  image: string
-}
-
-export interface RSSItem {
-  title: string
-  pubDate: string
-  link: string
-  guid: string
-  author: string
-  thumbnail: string
-  description: string
-  content: string
-}
-
-export async function fetchRSSFeed(url: string): Promise<RSSFeed | null> {
-  try {
-    const response = await fetch(
-      `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}&count=100&api_key=${process.env.RSS2JSON_API_KEY}`,
-      { next: { revalidate: 60 * 60 } } // cache for one hour
-    )
-    const data: RSSFeed = await response.json()
-
-    return data;
-  } catch (error) {
-    console.error('Error fetching rss:', error);
-    return null;
-  }
-}
-
-export async function fetchFeedMeta(feedUrl: string): Promise<RSSFeedMeta | undefined> {
-  const response = await fetchRSSFeed(feedUrl);
-  return response?.feed;
-}
+// export async function fetchFeedMeta(feedUrl: string): Promise<FeedData[] | undefined> {
+//   const response = await fetchRSSFeed(feedUrl);
+//   return response?.feed;
+// }
 
 export async function fetchFeedItems(feedUrl: string) {
-  const response = await fetchRSSFeed(feedUrl);
+  const feed = await fetchRSSFeed(feedUrl);
 
-  const items = response?.items?.map(async (item) => {
-    const metadata = await fetchMetadata(item.link);
+  const items = feed?.entries?.map(async (item) => {
+    // TODO cleanup the || ''
+    const metadata = await fetchMetadata(item.link || '');
 
     if (!metadata.title) {
       console.log(metadata);
@@ -125,13 +131,13 @@ export async function fetchFeedItems(feedUrl: string) {
     }
 
     return {
-      feedUrl: response.feed.url,
-      feedTitle: response.feed.title,
-      thumbnail: metadata.thumbnail || item.thumbnail,
+      feedUrl: feed.link,
+      feedTitle: feed.title,
+      thumbnail: metadata.thumbnail,
       title: metadata.title || item.title,
       description: metadata.description || item.description,
       url: item.link,
-      pubDate: item.pubDate,
+      pubDate: item.published,
       datePublished: metadata.datePublished,
       dateLastEdited: metadata.dateLastEdited,
     };
@@ -139,7 +145,7 @@ export async function fetchFeedItems(feedUrl: string) {
 
   try {
     const stories = await Promise.all(items);
-    stories.sort((a, b) => new Date(b.pubDate).getTime() - new Date(a.pubDate).getTime());
+    stories.sort((a, b) => new Date(b.pubDate || 0).getTime() - new Date(a.pubDate || 0).getTime());
     return stories;
   } catch (error) {
     console.error('Error fetching feed items with metadata:', error);
