@@ -39,7 +39,7 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={faviconUrl(data?.link ?? "")} alt="" className="aspect-square w-20 h-20 object-cover rounded-md mr-4" />
         <div>
-          <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={data?.link} target="_blank" className="hover:underline">{data?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
+          <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={data?.link ?? ''} target="_blank" className="hover:underline">{data?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
           <p className="text-muted-foreground">{data?.url}</p>
           <p className="mb-4">{data?.description}</p>
           {subscriptions.find(s => s.url === decodeURIComponent(params.feed)) ?

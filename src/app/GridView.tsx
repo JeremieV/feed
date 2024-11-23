@@ -25,7 +25,7 @@ function GridComponent({ story }: { story: Story }) {
   function isTweet(url: string) {
     const regex = /status\/(\d+)$/;
     const match = url.match(regex);
-    return match && (story.url.startsWith('https://twitter.com') || story.url.startsWith('https://x.com'))
+    return match && (story?.url?.startsWith('https://twitter.com') || story?.url?.startsWith('https://x.com'))
   }
 
   function tweetId(url: string) {
@@ -37,19 +37,19 @@ function GridComponent({ story }: { story: Story }) {
   return (
     <a
       key={story.url}
-      href={story.url}
-      title={story.title}
+      href={story.url ?? ''}
+      title={story.title ?? ''}
       target="_blank"
       rel="noopener noreferrer"
       className="block rounded-md overflow-hidden"
     >
       <div className='aspect-video w-full overflow-hidden pointer-events-none' title={story.description ?? ''}>
-        {isTweet(story.url) ?
+        {isTweet(story.url ?? '') ?
           (
             <div className="aspect-video w-full overflow-scroll rounded-xl overscroll-none">
               <TwitterTweetEmbed
                 onLoad={function noRefCheck() { }}
-                tweetId={tweetId(story.url)}
+                tweetId={tweetId(story.url ?? '')}
               />
             </div>
           )
@@ -58,26 +58,26 @@ function GridComponent({ story }: { story: Story }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={story.thumbnail}
-              alt={story.title}
+              alt={story.title ?? ''}
               className="w-full h-full object-cover rounded-md text-left leading-tight line-clamp-3"
             />
             :
-            <Thumbnail title={story.title} />
+            <Thumbnail title={story.title ?? ''} />
         }
       </div>
       <div className="flex">
         <div className='pt-3 min-w-10'>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={faviconUrl(story.url)}
+            src={faviconUrl(story.url ?? '')}
             alt=""
             className="aspect-square rounded-md w-10 h-10 object-cover" />
         </div>
         <div className="p-3 flex flex-col gap-1">
           <h2 className="font-semibold text-foreground line-clamp-2">{story.title}</h2>
           <div className="text-sm text-muted-foreground flex flex-col gap-1">
-            <div><a href={`/feed/${encodeURIComponent(story.feedUrl)}`} title={story.feedUrl} className="hover:text-primary transition-colors">{displayUrl(story.url)}</a></div>
-            <div><Upvote upvoted={false} count={0} /><span className="mx-1">{`•`}</span><span>{displayTimeAgo(story.pubDate)}</span></div>
+            <div><a href={`/feed/${encodeURIComponent(story.feedUrl ?? '')}`} title={story.feedUrl ?? ''} className="hover:text-primary transition-colors">{displayUrl(story.url ?? '')}</a></div>
+            <div><Upvote upvoted={false} count={0} /><span className="mx-1">{`•`}</span><span>{displayTimeAgo(story.pubDate ?? '')}</span></div>
           </div>
         </div>
       </div>

@@ -91,7 +91,7 @@ function SearchBar() {
           {suggestions?.map(s =>
             <CommandItem key={s.url} className="rounded-none hover:cursor-pointer" onSelect={() => gotoFeedPage(s.url)}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={faviconUrl(s.link)} alt="" className="aspect-square w-6 h-6 rounded-md mr-4" />
+              <img src={faviconUrl(s.link ?? '')} alt="" className="aspect-square w-6 h-6 rounded-md mr-4" />
               <span>{s.title}</span>
             </CommandItem>
           )}
@@ -171,7 +171,7 @@ export default function Page({
           </Link>
         ))}
         <div className="p-6 my-4 space-y-4 text-sm text-left bg-muted rounded-md text-muted-foreground">
-          <p>Feeds are our windows on the world, so we need one that is <a href="https://github.com/jeremiev/feed" className='underline'>open source</a> and democratically governed.</p>
+          <p>Feeds are our windows on the world, so we need one that is <a href="https://github.com/jeremiev/feed" className='underline'>open source</a> and codetermined.</p>
           <p>Made by <a href="https://jeremievaney.com" className='underline'>Jérémie Vaney</a></p>
         </div>
       </div>

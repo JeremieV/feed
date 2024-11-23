@@ -4,7 +4,7 @@ import withPWA from 'next-pwa';
 const nextConfig = withPWA({
   dest: 'public',
   // reactStrictMode: true
-  // disable: process.env.NODE_ENV === 'development', // Disable PWA in development mode
+  disable: process.env.NODE_ENV === 'development', // Disable PWA in development mode
 })({
   eslint: {
     // Warning: This allows production builds to successfully complete even if
