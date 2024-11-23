@@ -155,10 +155,11 @@ export async function updateFeedItems(url: string) {
         datePublished: item.datePublished ? new Date(item.datePublished) : null,
         dateLastEdited: item.dateLastEdited ? new Date(item.dateLastEdited) : null,
       })))
-      .onConflictDoUpdate({
-        target: links.url,
-        set: { title: sql`excluded.title`, description: sql`excluded.description`, thumbnail: sql`excluded.thumbnail` },
-      })
+      // .onConflictDoUpdate({
+      //   target: links.url,
+      //   set: { title: sql`excluded.title`, description: sql`excluded.description`, thumbnail: sql`excluded.thumbnail` },
+      // })
+      .onConflictDoNothing()
       .execute();
 
     await tx.insert(feedItems)

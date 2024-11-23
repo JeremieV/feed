@@ -64,9 +64,9 @@ function SearchBar() {
 
   const [inputValue, setInputValue] = useState('')
   const { isPending, data: suggestions } = useQuery({
-    queryKey: ['search', inputValue],
+    queryKey: ['allFeeds'],
     queryFn: async () => {
-      return await searchFeeds(inputValue)
+      return await searchFeeds('')
     },
   })
 
@@ -201,7 +201,7 @@ export default function Page({
         {/* Main content area */}
         <div className="lg:pl-72 min-h-svh [&>*]:max-w-6xl [&>*]:mx-auto">
           {/* header */}
-          <div className="sticky top-0 z-40 bg-card px-4">
+          <div className="sticky top-0 z-40 bg-[#ffffff] dark:bg-[#0a0a0a] px-4">
             <div className="flex h-16 shrink-0 items-center gap-x-2">
               <div className="lg:hidden">
                 <Logo />

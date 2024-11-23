@@ -36,7 +36,7 @@ export async function fetchMetadata(url: string) {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.5993.88 Safari/537.36'
       },
-      next: { revalidate: 86400 } // cache for 1 day
+      // next: { revalidate: 86400 } // cache for 1 day
     });
 
     // Ensure the request was successful (status code 200)
