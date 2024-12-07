@@ -1,4 +1,3 @@
-import { getSubscriptions } from "@/app/server/queries";
 import { useAuth } from "@clerk/nextjs";
 import { CircleFadingArrowUp, House, Rss, SquareUserRound } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button"

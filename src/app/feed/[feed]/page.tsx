@@ -4,13 +4,13 @@ import Stories from "../../Stories";
 import { faviconUrl } from "@/lib/helpers";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAtom } from "jotai";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { addSubscription, getFeedInfo, getItemsFromMultipleFeeds } from "@/app/server/queries";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { useSubscriptions } from "@/lib/hooks";
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
-  // const [subscriptions] = useAtom(loadableSubscriptionsAtom)
+  const subscriptions = useSubscriptions()
   const decodedFeedURI = decodeURIComponent(params.feed)
 
   const subscribe = useMutation({
@@ -54,13 +54,12 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
           <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={data?.link ?? ''} target="_blank" className="hover:underline">{data?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
           <p className="text-muted-foreground">{data?.url}</p>
           <p className="mb-4">{data?.description}</p>
-          {/* {subscriptions.state === 'hasData' ?
+          {subscriptions.isSuccess ?
             subscriptions.data.find(s => s.url === decodedFeedURI) ?
               <Button onClick={() => { }} variant="outline">Unsubscribe</Button> :
               <Button onClick={() => { subscribe.mutate() }}>Subscribe</Button>
-            : 
-          } */}
-          <Button onClick={() => { }} disabled>Loading...</Button>
+            : <Button onClick={() => { }} disabled>Loading...</Button>
+          }
           {/* setSubscriptions(subscriptions.filter(s => s.url !== data?.url)) */}
           {/* setSubscriptions([{ name: data?.title ?? '', url: data?.url ?? '' }, ...subscriptions]) */}
         </div>
