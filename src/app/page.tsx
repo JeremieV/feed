@@ -1,13 +1,12 @@
 "use client"
 
-import { useAtom } from 'jotai'
+import { getRecommendedStories } from './server/queries'
 import Stories from './Stories'
-import { frontPageFeedsAtom } from '@/lib/state'
 
 export default function Page() {
-  const [feeds] = useAtom(frontPageFeedsAtom)
-
   return (
-    <Stories feeds={feeds}></Stories>
+    <Stories
+      queryFn={({ pageParam }) => getRecommendedStories()}
+      queryKey={['recommedended']} />
   )
 }

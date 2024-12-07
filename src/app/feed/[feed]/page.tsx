@@ -4,20 +4,32 @@ import Stories from "../../Stories";
 import { faviconUrl } from "@/lib/helpers";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { subscriptionsAtom } from "@/lib/state";
 import { useAtom } from "jotai";
-import { useQuery } from "@tanstack/react-query";
-import { getFeedInfo } from "@/app/server/feedsCRUD";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { addSubscription, getFeedInfo, getItemsFromMultipleFeeds } from "@/app/server/queries";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
-  const [subscriptions, setSubscriptions] = useAtom(subscriptionsAtom)
+  // const [subscriptions] = useAtom(loadableSubscriptionsAtom)
+  const decodedFeedURI = decodeURIComponent(params.feed)
+
+  const subscribe = useMutation({
+    mutationFn: () => addSubscription(decodedFeedURI),
+    onError: (error) => {
+      // An error happened!
+      console.log(`There was an error adding the subscription: ${error}`)
+    },
+    onSuccess: () => {
+      console.log('success')
+    },
+  })
+
 
   const { isPending, error, data } = useQuery({
-    queryKey: ['feed', decodeURIComponent(params.feed)],
+    queryKey: ['feed', decodedFeedURI],
     queryFn: async () => {
       console.log("starting to load")
-      return await getFeedInfo(decodeURIComponent(params.feed))
+      return await getFeedInfo(decodedFeedURI)
     }
   })
 
@@ -42,13 +54,19 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
           <h1 className="font-semibold text-2xl flex items-center gap-2"><a href={data?.link ?? ''} target="_blank" className="hover:underline">{data?.title}</a><SquareArrowOutUpRight className="w-5 h-5" /></h1>
           <p className="text-muted-foreground">{data?.url}</p>
           <p className="mb-4">{data?.description}</p>
-          {subscriptions.find(s => s.url === decodeURIComponent(params.feed)) ?
-            <Button onClick={() => setSubscriptions(subscriptions.filter(s => s.url !== data?.url))} variant="outline">Unsubscribe</Button> :
-            <Button onClick={() => setSubscriptions([{ name: data?.title ?? '', url: data?.url ?? '' }, ...subscriptions])}>Subscribe</Button>
-          }
+          {/* {subscriptions.state === 'hasData' ?
+            subscriptions.data.find(s => s.url === decodedFeedURI) ?
+              <Button onClick={() => { }} variant="outline">Unsubscribe</Button> :
+              <Button onClick={() => { subscribe.mutate() }}>Subscribe</Button>
+            : 
+          } */}
+          <Button onClick={() => { }} disabled>Loading...</Button>
+          {/* setSubscriptions(subscriptions.filter(s => s.url !== data?.url)) */}
+          {/* setSubscriptions([{ name: data?.title ?? '', url: data?.url ?? '' }, ...subscriptions]) */}
         </div>
       </div>
-      <Stories feeds={[decodeURIComponent(params.feed)]} />
+      <Stories queryFn={({ pageParam }) => getItemsFromMultipleFeeds([decodedFeedURI], pageParam)}
+        queryKey={['feed', params.feed]} />
     </div>
   )
 }

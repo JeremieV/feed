@@ -68,8 +68,10 @@ export const upvotes = pgTable("upvotes", {
   }
 );
 
-export const subs = pgTable("subscriptions", {
-  feedUrl: text("feed_url").references(() => feeds.url),
+export const subscriptions = pgTable("subscriptions", {
+  feedUrl: text("feed_url")
+    .notNull()
+    .references(() => feeds.url),
   subscriberId: text("subscriber_id")
     .notNull()
     .references(() => users.id),

@@ -3,7 +3,7 @@
 import { fetchMetadata } from "./fetchMetadata";
 import { extract, FeedData } from '@extractus/feed-extractor'
 
-// async function fetchHackerNewsTopStories(): Promise<Story[]> {
+// async function fetchHackerNewsTopStories(): Promise<Link[]> {
 //   const response = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
 //   const storyIds = await response.json()
 
@@ -15,7 +15,7 @@ import { extract, FeedData } from '@extractus/feed-extractor'
 //   return storyDetails
 // }
 
-// async function fetchDevToTopStories(): Promise<Story[]> {
+// async function fetchDevToTopStories(): Promise<Link[]> {
 //   interface DevToPost {
 //     id: number
 //     title: string

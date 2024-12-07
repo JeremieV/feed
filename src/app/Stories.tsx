@@ -1,18 +1,17 @@
 "use client"
 
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import GridView from "./GridView"
 import ListView from "./ListView"
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useAtom } from "jotai";
 import { viewAtom } from "@/lib/state";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getItemsFromMultipleFeeds, getRecommendedStories } from "./server/feedsCRUD";
 import { Button } from "@/components/ui/button";
+import { Link } from "@/lib/types";
 
-export default function Stories({ feeds }: { feeds: string[] }) {
+export default function Stories({ queryKey, queryFn }: { queryKey: string[], queryFn: ({ pageParam }: { pageParam: number }) => Promise<Link[]> }) {
   const [view] = useAtom(viewAtom)
-  const [showSuggestions, setShowSuggestions] = useState(false)
 
   const {
     data: stories,
@@ -23,15 +22,10 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ['stories', feeds],
-    queryFn: async ({ pageParam }) => {
-      if (feeds.length === 0) {
-        return await getRecommendedStories()
-      }
-      return await getItemsFromMultipleFeeds(feeds, pageParam)
-    },
+    queryKey,
+    queryFn,
     initialPageParam: 1,
-    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+    getNextPageParam: (lastPage, pages, lastPageParam) => {
       if (lastPage.length === 0) return undefined
       return lastPageParam + 1
     },
@@ -45,18 +39,11 @@ export default function Stories({ feeds }: { feeds: string[] }) {
     return <div>Error: {error.name} {error.message}</div>
   }
 
-  const currentStories = stories?.pages.flatMap(page => page) || []
-
-  if (feeds.length === 0 && !showSuggestions) {
-    return (
-      <div className="w-full text-center py-4 grow flex flex-col justify-center">
-        <div>
-          <p className="text-muted-foreground mb-4">Welcome to the open feed reader!</p>
-          <Button variant="outline" onClick={() => setShowSuggestions(true)}>Show home page suggestions</Button>
-        </div>
-      </div>
-    )
+  if (!stories?.pages) {
+    return <div>Error</div>
   }
+
+  const currentStories = stories?.pages.flatMap(page => page) ?? []
 
   return (
     <Fragment>

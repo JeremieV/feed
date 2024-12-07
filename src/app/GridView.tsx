@@ -1,13 +1,13 @@
 "use client"
 
 import { displayTimeAgo, displayUrl, faviconUrl } from "@/lib/helpers"
-import { Story } from "@/lib/types"
+import { Link } from "@/lib/types"
 import Thumbnail from "./Thumbnail"
 import { TwitterTweetEmbed } from 'react-twitter-embed'
 import Upvote from "@/components/upvote"
 // import { Skeleton } from "@/components/ui/skeleton"
 
-export default function GridView({ currentStories }: { currentStories: Story[] }) {
+export default function GridView({ currentStories }: { currentStories: Link[] }) {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
       {currentStories.map((story) => (
@@ -17,7 +17,7 @@ export default function GridView({ currentStories }: { currentStories: Story[] }
   )
 }
 
-function GridComponent({ story }: { story: Story }) {
+function GridComponent({ story }: { story: Link }) {
   // if (!metadata) {
   //   return <GridComponentSkeleton />
   // }

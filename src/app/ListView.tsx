@@ -1,8 +1,8 @@
 import Upvote from "@/components/upvote";
 import { displayTimeAgo, displayUrl } from "@/lib/helpers";
-import { Story } from "@/lib/types";
+import { Link } from "@/lib/types";
 
-export default function ListView({ currentStories }: { currentStories: Story[] }) {
+export default function ListView({ currentStories }: { currentStories: Link[] }) {
   return (
     <div className="overflow-hidden mb-4">
       {currentStories.map((story) => (

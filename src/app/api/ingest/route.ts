@@ -1,4 +1,4 @@
-import { updateFeedItems } from '@/app/server/feedsCRUD';
+import { updateFeedItems } from '@/app/server/queries';
 import { db, feeds } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -17,9 +17,13 @@ export async function GET(req: NextRequest) {
       .limit(4000);
 
     for (const { url } of allFeeds) {
-      await updateFeedItems(url);
+      try {
+        await updateFeedItems(url);
+      } catch (e) {
+        console.error(`Failed to ingest feed: ${url}`, e);
+      }
     }
-  
+
     console.log(new Date().toISOString(), " | Ran ingestion on all feeds");
     await new Promise((resolve) => setTimeout(resolve, 1000 * 60 * 60 * 12)); // every 12 hours
   }

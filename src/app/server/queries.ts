@@ -1,9 +1,11 @@
 "use server"
 
-import { db, feeds, feedItems, links } from '@/lib/db';
-import { eq, desc, inArray } from 'drizzle-orm';
+import { db, feeds, feedItems, links, subscriptions, users, upvotes } from '@/lib/db';
+import { eq, desc, inArray, and } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import { fetchFeedItems, fetchRSSFeed } from '@/lib/fetchRSS';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { Link } from '@/lib/types';
 
 /**
  * Fetch a feed's info by URL.
@@ -63,6 +65,80 @@ export async function getFeedItems(url: string) {
   return items;
 }
 
+export async function getSubscriptions() {
+  const { userId } = auth()
+  if (!userId) return [];
+
+  // join to get the name
+  return await db.select({
+    url: subscriptions.feedUrl,
+    title: feeds.title,
+  })
+    .from(subscriptions)
+    .where(eq(subscriptions.subscriberId, userId))
+    .innerJoin(feeds, eq(subscriptions.feedUrl, feeds.url))
+}
+
+export async function addSubscription(url: string) {
+  const { userId } = auth();
+  if (!userId) return;
+
+  await db.insert(subscriptions)
+    .values({ feedUrl: url, subscriberId: userId })
+    .onConflictDoNothing()
+    .execute();
+}
+
+export async function removeSubscription(url: string) {
+  const { userId } = auth();
+  if (!userId) return;
+
+  return await db.delete(subscriptions)
+    .where(and(eq(subscriptions.feedUrl, url), eq(subscriptions.subscriberId, userId)))
+    .execute();
+}
+
+export async function getProfile() {
+  const { userId } = auth();
+  if (!userId) return;
+
+  const profileRow = await db.select()
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+
+  if (profileRow.length === 0) {
+    await createProfileRow();
+  }
+
+  const user = await currentUser()
+
+  if (!user) return;
+
+  return {
+    userId: user.id,
+    username: user.username,
+    description: user.privateMetadata.description as string,
+    avatar: user.imageUrl,
+  };
+}
+
+export async function createProfileRow() {
+  const { userId } = auth();
+  if (!userId) return;
+
+  const profile = await db.insert(users)
+    .values({
+      id: userId,
+      username: '',
+      description: '',
+      avatar: '',
+    })
+    .returning();
+
+  return profile[0];
+}
+
 export async function getRecommendedStories() {
   // ideal mix (percentages to be determined):
   // random
@@ -92,6 +168,8 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number
   const itemsPerPage = 60; // 60 items per page
   const offset = (page - 1) * itemsPerPage;
 
+  console.log('fetching', feedUrls, 'page', page)
+
   const items = await db.select({
     feedUrl: feedItems.feedUrl,
     pubDate: feedItems.pubDate,
@@ -104,6 +182,28 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number
     .innerJoin(links, eq(feedItems.linkUrl, links.url))
     .where(inArray(feedItems.feedUrl, feedUrls))
     .orderBy(desc(feedItems.pubDate))
+    .offset(offset)
+    .limit(itemsPerPage)
+
+  return items;
+}
+
+export async function getUserUpvotedLinks(userId: string, page: number) {
+  const itemsPerPage = 60; // 60 items per page
+  const offset = (page - 1) * itemsPerPage;
+
+  const items = await db.select({
+    feedUrl: upvotes.linkUrl,
+    pubDate: links.datePublished,
+    url: links.url,
+    title: links.title,
+    description: links.description,
+    thumbnail: links.thumbnail,
+  })
+    .from(upvotes)
+    .innerJoin(links, eq(upvotes.linkUrl, links.url))
+    .where(eq(upvotes.userId, userId))
+    .orderBy(desc(upvotes.timestamp))
     .offset(offset)
     .limit(itemsPerPage)
 

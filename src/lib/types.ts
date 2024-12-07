@@ -1,4 +1,4 @@
-export interface Story {
+export interface Link {
   title: string | null
   feedUrl: string | null
   thumbnail: string | null

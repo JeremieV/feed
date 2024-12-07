@@ -3,41 +3,41 @@ import { atomWithStorage } from 'jotai/utils'
 
 export const viewAtom = atomWithStorage<'list' | 'grid'>('view', 'list')
 
-export const frontPageTopicAtom = atom<string | undefined>(undefined)
+// export const frontPageTopicAtom = atom<string | undefined>(undefined)
 
-export const frontPageFeedsAtom = atom<string[]>(
-  get => {
-    const topic = get(frontPageTopicAtom)
-    if (!topic) return []
-    if (topic === 'subscriptions') return get(subscriptionsAtom).map(sub => sub.url)
-    // @ts-expect-error this is fine (*lying*)
-    return topics[topic] as string[]
-  }
-)
+// export const frontPageFeedsAtom = atom<string[]>(
+//   get => {
+//     const topic = get(frontPageTopicAtom)
+//     if (!topic) return []
+//     if (topic === 'subscriptions') return get(subscriptionsAtom).map(sub => sub.url)
+//     // @ts-expect-error this is fine (*lying*)
+//     return topics[topic] as string[]
+//   }
+// )
 
-export const subscriptionsAtom = atomWithStorage<{ name: string, url: string }[]>('subscriptions', [])
+export const sidebarOpenAtom = atomWithStorage<boolean>('sidebarOpen', false)
 
-export const topics = {
-  // popular: [],
-  world: [
-    "https://feeds.bbci.co.uk/news/world/rss.xml",
-    "https://www.npr.org/rss/rss.php",
-    "https://www.pewresearch.org/feed/",
-    "http://www.aljazeera.com/xml/rss/all.xml",
-    "https://www.economist.com/latest/rss.xml",
-    "https://www.theguardian.com/world/rss",
-    "http://feeds.feedburner.com/time/world",
-    "https://www.vox.com/rss/index.xml",
-  ],
-  tech: [
-    "https://www.wired.com/feed/rss",
-    "https://www.techcrunch.com/feed",
-    "https://www.theverge.com/rss/index.xml",
-    "https://www.techradar.com/rss",
-    "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
-    "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA",
-  ],
-}
+// export const topics = {
+//   // popular: [],
+//   world: [
+//     "https://feeds.bbci.co.uk/news/world/rss.xml",
+//     "https://www.npr.org/rss/rss.php",
+//     "https://www.pewresearch.org/feed/",
+//     "http://www.aljazeera.com/xml/rss/all.xml",
+//     "https://www.economist.com/latest/rss.xml",
+//     "https://www.theguardian.com/world/rss",
+//     "http://feeds.feedburner.com/time/world",
+//     "https://www.vox.com/rss/index.xml",
+//   ],
+//   tech: [
+//     "https://www.wired.com/feed/rss",
+//     "https://www.techcrunch.com/feed",
+//     "https://www.theverge.com/rss/index.xml",
+//     "https://www.techradar.com/rss",
+//     "https://www.youtube.com/feeds/videos.xml?channel_id=UCsBjURrPoezykLs9EqgamOA",
+//     "https://www.youtube.com/feeds/videos.xml?channel_id=UCbRP3c757lWg9M-U7TyEkXA",
+//   ],
+// }
 
 // function setFeeds(feeds: string[]) {
 //   // deduplicate

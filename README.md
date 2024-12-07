@@ -2,7 +2,7 @@
 
 The open source link aggregator.
 
-If people like this, it might very well become a more fully-featured app and long term community project. Support the project by starring it on GitHub and sharing it.
+This is my side project at the moment.
 
 ## Roadmap 
 
@@ -12,9 +12,8 @@ If people like this, it might very well become a more fully-featured app and lon
 - recommendation algo (eg 50% most upvoted, 30% following, 20% random (to start))
 - import/export OPML
 <!--  -->
-- get the first 3 users
-  - announce project somewhere
-  - put some interested people in a group (discord?)
+- announce project somewhere
+- put some interested people in a group (discord/slack)
 <!--  -->
 - branding
   - logo / favicon
@@ -26,7 +25,7 @@ If people like this, it might very well become a more fully-featured app and lon
 - fix the tailwind css pattern which is over optimistic
 - choose a license (I am thinking about https://choosealicense.com/licenses/unlicense/)
 <!--  -->
-- more official launch
+- launch
 
 ## Changelog (most recent first)
 
