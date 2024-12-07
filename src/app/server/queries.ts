@@ -7,6 +7,8 @@ import { fetchFeedItems, fetchRSSFeed } from '@/lib/fetchRSS';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { Link } from '@/lib/types';
 
+const itemsPerPage = 60;
+
 /**
  * Fetch a feed's info by URL.
  * If there is no such feed in the database, fetches info and creates a new record.
@@ -141,10 +143,10 @@ export async function createProfileRow() {
 
 export async function getRecommendedStories() {
   // ideal mix (percentages to be determined):
-  // random
+  // subscriptions (40/60)
+  // random (20/60)
   // top stories
   // new stories
-  // subscriptions stories
   // old classics
   // "for you" stories
 
@@ -165,10 +167,7 @@ export async function getRecommendedStories() {
 }
 
 export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number) {
-  const itemsPerPage = 60; // 60 items per page
   const offset = (page - 1) * itemsPerPage;
-
-  console.log('fetching', feedUrls, 'page', page)
 
   const items = await db.select({
     feedUrl: feedItems.feedUrl,

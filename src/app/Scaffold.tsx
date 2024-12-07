@@ -31,6 +31,7 @@ export default function Page({
 }>) {
   const [queryClient] = useState(() => new QueryClient())
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
+  const [searchBarFocused, setSearchBarFocused] = useState(false)
 
   return (
     <QueryClientProvider client={queryClient}>

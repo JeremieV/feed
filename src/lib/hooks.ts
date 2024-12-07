@@ -1,5 +1,6 @@
 import { getSubscriptions } from "@/app/server/queries";
 import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from 'react';
 
 export function useSubscriptions() {
   return useQuery({
@@ -11,4 +12,15 @@ export function useSubscriptions() {
       return await getSubscriptions()
     }
   })
+}
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+
+  return debouncedValue;
 }

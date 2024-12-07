@@ -6,6 +6,7 @@ This is my side project at the moment.
 
 ## Roadmap 
 
+- invalidate subscriptions after mutation (new subscription)
 - review the youtube etc compatibility (and activitypub)
 - redo the search bar
 - implement upvotes, user profiles (name image description), and history
