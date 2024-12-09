@@ -95,7 +95,7 @@ export async function removeSubscription(url: string) {
   const { userId } = auth();
   if (!userId) return;
 
-  return await db.delete(subscriptions)
+  await db.delete(subscriptions)
     .where(and(eq(subscriptions.feedUrl, url), eq(subscriptions.subscriberId, userId)))
     .execute();
 }

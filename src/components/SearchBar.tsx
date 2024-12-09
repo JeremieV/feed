@@ -2,7 +2,7 @@
 
 import { faviconUrl } from "@/lib/helpers";
 import { Separator } from "@/components/ui/separator";
-import { Search } from "lucide-react";
+import { ArrowLeft, Search } from "lucide-react";
 import { urlToRSS } from "@/lib/helpers"
 import { useRouter } from "next/navigation";
 import { searchFeeds } from "@/app/server/queries";
@@ -11,9 +11,11 @@ import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "./ui/input";
 import { useDebounce } from "@/lib/hooks";
+import { useAtom } from "jotai";
+import { searchBarOpenAtom, searchTermAtom } from "@/lib/state";
 
-export default function SearchBar() {
-  const [searchTerm, setSearchTerm] = useState('')
+function InputField() {
+  const [searchTerm, setSearchTerm] = useAtom(searchTermAtom)
   const [showSuggestions, setShowSuggestions] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
   const suggestionsRef = useRef<HTMLDivElement>(null)
@@ -104,6 +106,54 @@ export default function SearchBar() {
   })
 
   const placeholder = "Search or paste URL (RSS, youtube, medium, substack, reddit)"
+
+  return (
+    <div className="flex gap-2 mx-auto w-full max-w-2xl justify-end md:justify-between">
+      <div className="relative grow">
+        <Input
+          ref={inputRef}
+          type="text"
+          placeholder="Search"
+          value={searchTerm}
+          onChange={handleInputChange}
+          onFocus={() => setShowSuggestions(true)}
+          className="mx-0"></Input>
+        {
+          showSuggestions && (
+            <div
+              ref={suggestionsRef}
+              className="absolute z-10 w-full max-w-2xl bg-card border border-muted mt-2 rounded-md shadow-lg max-h-[70svh] overflow-scroll"
+            >
+              {suggestions?.length ? (
+                suggestions.map((s, index) => (
+                  <a
+                    onMouseOver={() => setIndexFocused(index)}
+                    href={`/feed/${encodeURIComponent(s.url)}`}
+                    key={index}
+                    className={`px-4 py-2 ${index === (indexFocused % suggestions.length) ? 'bg-muted' : ''} cursor-pointer flex items-center`}
+                  >
+                    <Search className="h-4 w-4 mr-2 text-muted-foreground" />
+                    {s.title}
+                  </a>
+                ))
+              ) : (
+                <div className="px-4 py-2">No suggestions found</div>
+              )}
+            </div>
+          )
+        }
+      </div>
+      <Button variant={"outline"} className="mx-0">
+        <Search size={20} strokeWidth={1.2} className="md:mx-1" />
+        <span className="sr-only">Search</span>
+      </Button>
+    </div>
+  )
+}
+
+export default function SearchBar() {
+  const [searchBarOpen, setSearchBarOpen] = useAtom(searchBarOpenAtom)
+
   return (
     // <>
     //   <div className="lg:hidden grow"></div>
@@ -131,49 +181,30 @@ export default function SearchBar() {
     //     </CommandList>
     //   </CommandDialog>
     // </>
-
-    <div className="w-full">
-      <div className="flex gap-2 mx-auto md:w-full max-w-2xl justify-end md:justify-between">
-        <div className="relative grow">
-          <Input
-            ref={inputRef}
-            type="text"
-            placeholder="Search"
-            value={searchTerm}
-            onChange={handleInputChange}
-            onFocus={() => setShowSuggestions(true)}
-            className="mx-0"></Input>
-          {
-            showSuggestions && (
-              <div
-                ref={suggestionsRef}
-                className="absolute z-10 w-full max-w-2xl bg-card border border-muted mt-2 rounded-md shadow-lg max-h-[70svh] overflow-scroll"
-              >
-                {suggestions?.length ? (
-                  suggestions.map((s, index) => (
-                    <a
-                      onMouseOver={() => setIndexFocused(index)}
-                      href={`/feed/${encodeURIComponent(s.url)}`}
-                      key={index}
-                      className={`px-4 py-2 ${index === (indexFocused % suggestions.length) ? 'bg-muted' : ''} cursor-pointer flex items-center`}
-                    >
-                      <Search className="h-4 w-4 mr-2 text-muted-foreground" />
-                      {s.title}
-                    </a>
-                  ))
-                ) : (
-                  <div className="px-4 py-2">No suggestions found</div>
-                )}
-              </div>
-            )
-          }
+    <>
+      <div className="w-full hidden lg:block">
+        <div className="flex gap-2 mx-auto md:w-full max-w-2xl justify-end md:justify-between">
+          <InputField />
         </div>
-        <Button variant={"outline"} className="mx-0">
+      </div >
+      <div>
+        <Button variant={"ghost"} className="mx-0 lg:hidden" onClick={() => setSearchBarOpen(!searchBarOpen)}>
           <Search size={20} strokeWidth={1.2} className="md:mx-1" />
           <span className="sr-only">Search</span>
         </Button>
       </div>
-    </div >
+      {searchBarOpen && (
+        <div className="fixed left-0 lg:pl-72 z-50 w-full bg-[#ffffff] dark:bg-[#0a0a0a] lg:hidden">
+          <div className="px-4 flex">
+            <Button variant={"ghost"} className="mr-2">
+              <ArrowLeft size={20} strokeWidth={1.2} className="md:mx-1" onClick={() => setSearchBarOpen(false)} />
+            </Button>
+            <InputField />
+          </div >
+        </div>
+      )
+      }
+    </>
 
   )
 }

@@ -4,6 +4,7 @@ import { atomWithStorage } from 'jotai/utils'
 export const viewAtom = atomWithStorage<'list' | 'grid'>('view', 'list')
 export const sidebarOpenAtom = atomWithStorage<boolean>('sidebarOpen', false)
 export const searchBarOpenAtom = atom<boolean>(false)
+export const searchTermAtom = atom<string>('')
 
 // export const frontPageTopicAtom = atom<string | undefined>(undefined)
 

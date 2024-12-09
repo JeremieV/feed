@@ -4,31 +4,41 @@ import Stories from "../../Stories";
 import { faviconUrl } from "@/lib/helpers";
 import { SquareArrowOutUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { addSubscription, getFeedInfo, getItemsFromMultipleFeeds } from "@/app/server/queries";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { addSubscription, getFeedInfo, getItemsFromMultipleFeeds, removeSubscription } from "@/app/server/queries";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import { useSubscriptions } from "@/lib/hooks";
 
 export default function FeedPage({ params }: { params: { feed: string } }) {
   const subscriptions = useSubscriptions()
   const decodedFeedURI = decodeURIComponent(params.feed)
+  const queryClient = useQueryClient()
 
   const subscribe = useMutation({
     mutationFn: () => addSubscription(decodedFeedURI),
     onError: (error) => {
-      // An error happened!
+      // TODO show a snackbar
       console.log(`There was an error adding the subscription: ${error}`)
     },
     onSuccess: () => {
-      console.log('success')
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
     },
   })
 
+  const unsubscribe = useMutation({
+    mutationFn: () => removeSubscription(decodedFeedURI),
+    onError: (error) => {
+      // TODO show a snackbar
+      console.log(`There was an error adding the subscription: ${error}`)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['subscriptions'] })
+    },
+  })
 
   const { isPending, error, data } = useQuery({
     queryKey: ['feed', decodedFeedURI],
     queryFn: async () => {
-      console.log("starting to load")
       return await getFeedInfo(decodedFeedURI)
     }
   })
@@ -56,9 +66,9 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
           <p className="mb-4">{data?.description}</p>
           {subscriptions.isSuccess ?
             subscriptions.data.find(s => s.url === decodedFeedURI) ?
-              <Button onClick={() => { }} variant="outline">Unsubscribe</Button> :
+              <Button onClick={() => { unsubscribe.mutate() }} variant="outline">Unsubscribe</Button> :
               <Button onClick={() => { subscribe.mutate() }}>Subscribe</Button>
-            : <Button onClick={() => { }} disabled>Loading...</Button>
+            : <Button onClick={() => null} disabled>Loading...</Button>
           }
           {/* setSubscriptions(subscriptions.filter(s => s.url !== data?.url)) */}
           {/* setSubscriptions([{ name: data?.title ?? '', url: data?.url ?? '' }, ...subscriptions]) */}
