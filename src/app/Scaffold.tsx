@@ -31,11 +31,10 @@ export default function Page({
 }>) {
   const [queryClient] = useState(() => new QueryClient())
   const [sidebarOpen, setSidebarOpen] = useAtom(sidebarOpenAtom)
-  const [searchBarFocused, setSearchBarFocused] = useState(false)
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Provider>
+      {/* <Provider> */}
         {/* Mobile sidebar */}
         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop transition className="fixed inset-0 bg-black/60 transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
@@ -80,7 +79,7 @@ export default function Page({
             {children}
           </main>
         </div>
-      </Provider>
+      {/* </Provider> */}
     </QueryClientProvider>
   )
 }

@@ -2,6 +2,8 @@ import { atom } from 'jotai'
 import { atomWithStorage } from 'jotai/utils'
 
 export const viewAtom = atomWithStorage<'list' | 'grid'>('view', 'list')
+export const sidebarOpenAtom = atomWithStorage<boolean>('sidebarOpen', false)
+export const searchBarOpenAtom = atom<boolean>(false)
 
 // export const frontPageTopicAtom = atom<string | undefined>(undefined)
 
@@ -15,7 +17,6 @@ export const viewAtom = atomWithStorage<'list' | 'grid'>('view', 'list')
 //   }
 // )
 
-export const sidebarOpenAtom = atomWithStorage<boolean>('sidebarOpen', false)
 
 // export const topics = {
 //   // popular: [],

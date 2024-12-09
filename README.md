@@ -9,7 +9,7 @@ This is my side project at the moment.
 - invalidate subscriptions after mutation (new subscription)
 - review the youtube etc compatibility (and activitypub)
 - redo the search bar
-- implement upvotes, user profiles (name image description), and history
+- implement upvotes,  user profiles (name image description), and history
 - recommendation algo (eg 50% most upvoted, 30% following, 20% random (to start))
 - import/export OPML
 <!--  -->
