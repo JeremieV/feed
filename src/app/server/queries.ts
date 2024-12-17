@@ -277,7 +277,7 @@ export async function updateFeedItems(url: string) {
       .onConflictDoNothing()
       .execute();
 
-    await db.update(feeds)
+    await tx.update(feeds)
       .set({ itemsUpdatedAt: sql`NOW()` })
       .where(eq(feeds.url, url))
       .execute();

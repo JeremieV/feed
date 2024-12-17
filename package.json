@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "ingest": "next build; sleep 30 && curl localhost:3001/api/ingest & next start --port 3001"
+    "ingest": "sleep 30 && curl localhost:3000/api/ingest & next dev"
   },
   "dependencies": {
     "@clerk/nextjs": "^5.7.2",
