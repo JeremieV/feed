@@ -6,7 +6,6 @@ This is my side project at the moment.
 
 ## Roadmap 
 
-- invalidate subscriptions after mutation (new subscription)
 - review the youtube etc compatibility (and activitypub)
 - redo the search bar
 - implement upvotes,  user profiles (name image description), and history
@@ -30,6 +29,7 @@ This is my side project at the moment.
 
 ## Changelog (most recent first)
 
+- 2024-12-09 invalidate subscriptions after mutation (new subscription)
 - 2024-10-19 feat: paginated feed items
 - 2024-10-19 feat: many UI changes and prototyped certain features
 - 2024-10-13 feat: added tweet previews

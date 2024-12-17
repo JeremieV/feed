@@ -53,6 +53,7 @@ export const users = pgTable("users", {
   username: text("username").notNull(),
   description: text("description").notNull(),
   avatar: text("avatar").notNull(),
+  
   ...timestamps,
 });
 
