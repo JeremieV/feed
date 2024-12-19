@@ -37,6 +37,7 @@ export default function FeedPage({ params }: { params: { feed: string } }) {
   })
 
   const { isPending, error, data } = useQuery({
+    refetchOnWindowFocus: false,
     queryKey: ['feed', decodedFeedURI],
     queryFn: async () => {
       return await getFeedInfo(decodedFeedURI)

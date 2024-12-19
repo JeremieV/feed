@@ -6,6 +6,7 @@ import Stories from "../Stories"
 
 export default function Page() {
   const { isPending, error, data: profile } = useQuery({
+    refetchOnWindowFocus: false,
     queryKey: ['profile'],
     queryFn: async () => {
       return await getProfile()

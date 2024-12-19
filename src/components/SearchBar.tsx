@@ -1,7 +1,5 @@
 "use client"
 
-import { faviconUrl } from "@/lib/helpers";
-import { Separator } from "@/components/ui/separator";
 import { ArrowLeft, Search } from "lucide-react";
 import { urlToRSS } from "@/lib/helpers"
 import { useRouter } from "next/navigation";
@@ -105,7 +103,7 @@ function InputField() {
     },
   })
 
-  const placeholder = "Search or paste URL (RSS, youtube, medium, substack, reddit)"
+  // const placeholder = "Search or paste URL (RSS, youtube, medium, substack, reddit)"
 
   return (
     <div className="flex gap-2 mx-auto w-full max-w-2xl justify-end md:justify-between">
@@ -143,7 +141,7 @@ function InputField() {
           )
         }
       </div>
-      <Button variant={"outline"} className="mx-0">
+      <Button variant={"ghost"} className="mx-0">
         <Search size={20} strokeWidth={1.2} className="md:mx-1" />
         <span className="sr-only">Search</span>
       </Button>

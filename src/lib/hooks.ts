@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 
 export function useSubscriptions() {
   return useQuery({
+    refetchOnWindowFocus: false,
     queryKey: ['subscriptions'],
     // FOR SOME MYSTERIOUS REASON USING THE FOLLOWING LINE BREAKS THE QUERY
     // queryFn: getSubscriptions

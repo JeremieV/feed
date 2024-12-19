@@ -22,6 +22,7 @@ export default function Stories({ queryKey, queryFn }: { queryKey: string[], que
     isFetching,
     isFetchingNextPage,
   } = useInfiniteQuery({
+    refetchOnWindowFocus: false,
     queryKey,
     queryFn,
     initialPageParam: 1,

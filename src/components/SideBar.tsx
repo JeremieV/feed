@@ -6,7 +6,6 @@ import Logo from "./Logo";
 import { Separator } from "./ui/separator";
 import { sidebarOpenAtom } from "@/lib/state";
 import { useAtom } from "jotai";
-import { useQuery } from "@tanstack/react-query";
 import { faviconUrl } from "@/lib/helpers";
 import { useSubscriptions } from "@/lib/hooks";
 
