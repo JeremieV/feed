@@ -18,7 +18,7 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
-import { Provider, useAtom } from 'jotai'
+import { useAtom } from 'jotai'
 import SideBar from "@/components/SideBar";
 import Logo from "@/components/Logo";
 import { sidebarOpenAtom } from "@/lib/state";
@@ -60,6 +60,7 @@ export default function Page({
             </div>
             <div className="grow" />
             <SearchBar />
+            <ControlBar />
             <SignedOut>
               <SignInButton>
                 <Button variant="outline">Sign in</Button>
@@ -70,9 +71,6 @@ export default function Page({
                 <Button>Sign out</Button>
               </UserButton>
             </SignedIn>
-          </div>
-          <div className="pb-4 mb-1">
-            <ControlBar />
           </div>
         </div>
 
