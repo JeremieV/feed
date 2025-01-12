@@ -4,7 +4,7 @@ import { Link } from "@/lib/types";
 
 export default function ListView({ currentStories }: { currentStories: Link[] }) {
   return (
-    <div className="overflow-hidden mb-4">
+    <div className="overflow-hidden mb-4 lg:p-8">
       {currentStories.map((story) => (
         <div key={story.url} className='flex flex-col py-2 px-[1px] items-start'>
           <a href={story.url ?? ''} target="_blank" title={story.title ?? ''} rel="noopener noreferrer" className='hover:underline text-foreground line-clamp-3'>{story.title}</a>
