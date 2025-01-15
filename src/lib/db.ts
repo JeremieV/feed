@@ -33,7 +33,7 @@ export const feedItems = pgTable("feed_items", {
 },
   (table) => {
     return {
-      pk: primaryKey({ columns: [table.feedUrl, table.linkUrl, table.pubDate] }),
+      pk: primaryKey({ columns: [table.feedUrl, table.linkUrl] }),
     };
   }
 );

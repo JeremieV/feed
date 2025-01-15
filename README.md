@@ -22,6 +22,7 @@ BUG FIXES:
   - logo / favicon
   - metadata
 <!--  -->
+- limit the time window of the random stories
 - curate "topics" better than the AI generated ones
 - display skeleton while loading instead of loading indicator (grid & list view)
 - let users create combined feeds

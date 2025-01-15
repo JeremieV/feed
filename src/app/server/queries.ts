@@ -5,9 +5,8 @@ import { eq, desc, inArray, and } from 'drizzle-orm';
 import { sql } from 'drizzle-orm';
 import { fetchFeedItems, fetchRSSFeed } from '@/lib/fetchRSS';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { Link } from '@/lib/types';
 
-const itemsPerPage = 60;
+const ITEMS_PER_PAGE = 60;
 
 /**
  * Fetch a feed's info by URL.
@@ -141,16 +140,12 @@ export async function createProfileRow() {
   return profile[0];
 }
 
-export async function getRecommendedStories() {
-  // ideal mix (percentages to be determined):
-  // subscriptions (40/60)
-  // random (20/60)
-  // top stories
-  // new stories
-  // old classics
-  // "for you" stories
+/** ordered stories */
 
-  const items = await db.select({
+export async function getRandomStories(page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
+  const offset = (page - 1) * itemsPerPage;
+
+  return await db.select({
     feedUrl: feedItems.feedUrl,
     pubDate: feedItems.pubDate,
     url: links.url,
@@ -161,12 +156,80 @@ export async function getRecommendedStories() {
     .from(feedItems)
     .innerJoin(links, eq(feedItems.linkUrl, links.url))  // Join with 'links' table on page URL
     .orderBy(sql`RANDOM()`)
-    .limit(60)
-
-  return items;
+    .offset(offset)
+    .limit(itemsPerPage)
 }
 
-export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number) {
+// TODO: top stories (implement upvotes)
+// export async function getTopStories(page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
+//   const offset = (page - 1) * itemsPerPage;
+
+//   const top_items = await db.select({
+//     feedUrl: feedItems.feedUrl,
+//     pubDate: feedItems.pubDate,
+//     url: links.url,
+//     title: links.title,
+//     description: links.description,
+//     thumbnail: links.thumbnail,
+//   })
+//     .from(feedItems)
+//     .innerJoin(links, eq(feedItems.linkUrl, links.url))  // Join with 'links' table on page URL
+//     .orderBy(desc(feedItems.pubDate))
+//     .offset(offset)
+//     .limit(itemsPerPage)
+
+//   return top_items;
+// }
+
+export async function getLatestStories(page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
+  const offset = (page - 1) * itemsPerPage;
+
+  return await db.select({
+    feedUrl: feedItems.feedUrl,
+    pubDate: feedItems.pubDate,
+    url: links.url,
+    title: links.title,
+    description: links.description,
+    thumbnail: links.thumbnail,
+  })
+    .from(feedItems)
+    .innerJoin(links, eq(feedItems.linkUrl, links.url))
+    .orderBy(desc(feedItems.pubDate))
+    .offset(offset)
+    .limit(itemsPerPage)
+}
+
+// TODO: add 'old classics' category
+
+export async function getRecommendedStories(page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
+
+  function shuffleArray<T>(array: T[]): T[] {
+    for (let i = array.length - 1; i > 0; i--) {
+      // Generate a random index between 0 and i
+      const j = Math.floor(Math.random() * (i + 1));
+      // Swap elements array[i] and array[j]
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+  
+  const { userId } = auth()
+  let subscriptions: typeof random = [];
+  if (userId) subscriptions = await getSubscriptionStories(page, Math.floor(itemsPerPage / 3));
+  const random = await getRandomStories(page, Math.floor(itemsPerPage / 3));
+  // fill the remaining page length with latest elements
+  const latest = await getLatestStories(page, itemsPerPage - subscriptions.length - random.length);
+
+  return shuffleArray([...latest, ...random, ...subscriptions]);
+}
+
+export async function getSubscriptionStories(page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
+  const subscriptions = await getSubscriptions();
+  const subscription_urls = subscriptions.map(sub => sub.url);
+  return await getItemsFromMultipleFeeds(subscription_urls, page, itemsPerPage);
+}
+
+export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
   const offset = (page - 1) * itemsPerPage;
 
   const items = await db.select({
@@ -187,8 +250,7 @@ export async function getItemsFromMultipleFeeds(feedUrls: string[], page: number
   return items;
 }
 
-export async function getUserUpvotedLinks(userId: string, page: number) {
-  const itemsPerPage = 60; // 60 items per page
+export async function getUserUpvotedLinks(userId: string, page: number, itemsPerPage: number = ITEMS_PER_PAGE) {
   const offset = (page - 1) * itemsPerPage;
 
   const items = await db.select({
