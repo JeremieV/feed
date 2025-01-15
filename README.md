@@ -11,7 +11,7 @@ BUG FIXES:
 
 - review the youtube etc compatibility (and activitypub)
 - redo the search bar
-- implement upvotes, user profiles (name image description), and history
+- implement upvotes (add an upvote_count to links), user profiles (name image description), and history
 - recommendation algo (eg 50% most upvoted, 30% following, 20% random (to start))
 - import/export OPML
 <!--  -->

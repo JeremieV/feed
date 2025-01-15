@@ -6,7 +6,7 @@ import Stories from './Stories'
 export default function Page() {
   return (
     <Stories
-      queryFn={({ pageParam }) => getRecommendedStories()}
+      queryFn={({ pageParam }) => getRecommendedStories(pageParam)}
       queryKey={['recommedended']} />
   )
 }
